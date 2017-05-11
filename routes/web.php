@@ -33,4 +33,18 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 	/* engineer basic route */
 	Route::post('requisition', 'RequestFormController@submitNewRequest');
+	Route::post('request_item', 'RequestItemController@saveItems');
+	Route::get('get_my_requisitions', 'RequestFormController@fetchMyRequisitions');
+	Route::post('get_request_items', 'RequestItemController@fetchMyItems');
+
+	/* purchase officier */
+	Route::get('request_forms_and_items', 'UserController@fetchRequestFormsAndItems');
+	Route::post('get_request_items_by_form', 'RequestItemController@fetchItemsByFormId');
+	Route::post('quotation_form', 'QuotationFormController@saveQuotation');
+	Route::post('quotation_item', 'QuotationItemController@saveQuoteItems');
+	Route::get('my_quotation_forms', 'QuotationFormController@fetchMyQuotations');
+	Route::get('quotations_all', 'QuotationFormController@fetchAllwithItems');
+
+	/* finance officer */
+	Route::post('approve_pr', 'RequestFormController@approveForm');
 });

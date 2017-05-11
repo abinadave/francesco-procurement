@@ -5,13 +5,42 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\RequestForm as RequestForm;
-
+use App\ApprovedDate as ApprovedDate;
 class RequestFormController extends Controller
 {
+    public function insertApprovalDate($form, $date){
+        $approvedDate = new ApprovedDate;
+        $approvedDate->date_of_approval = $date;
+        $approvedDate->request_form_id = $form['id'];
+        $approvedDate->approved_by = Auth::user()->id;
+        $approvedDate->save();
+    }
+    public function approveForm(Request $request){
+        $form = $request->input('request_form');
+        $type = $request->input('type');
+        $date = $request->input('date');
+        $model = RequestForm::findOrFail($form['id']);
+        $model->approved = $type;
+        $rsUpdated = $model->save();
+        if ($type) {
+            $this->insertApprovalDate($form, $date);
+        }
+        return response()->json([
+            'updated' => $rsUpdated,
+            'model' => $model,
+            'type' => $type
+        ]);
+    }
+    public function fetchMyRequisitions(){
+        $id = Auth::user()->id;
+        $requestForms = RequestForm::where('requested_by', $id)->orderBy('id','asc')->get();
+        return response()->json($requestForms);
+    }
     public function submitNewRequest(Request $request){
     	$this->validate($request, [
             'location' => 'required',
             'block_no' => 'required|numeric',
+            'charging' => 'required',
             'house_model' => 'required'
         ]);
     	return $this->saveRequest($request);
@@ -22,6 +51,7 @@ class RequestFormController extends Controller
     	$requestForm->location = $request->input('location');
     	$requestForm->block_no = $request->input('block_no');
     	$requestForm->house_model = $request->input('house_model');
+        $requestForm->charging = $request->input('charging');
     	$requestForm->datetime = $request->input('datetime');
     	$requestForm->checked_by = $request->input('checked_by');
     	$requestForm->save();

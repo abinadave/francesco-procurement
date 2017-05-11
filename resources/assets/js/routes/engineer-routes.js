@@ -8,15 +8,11 @@ window.router = new VueRouter({
   routes: [
     { 
       path: '/', 
-      redirect: '/landing-page' 
+      redirect: '/requisition' 
     },
     { 
       path: '/requisition', 
       component: RequisitionComponent
-    },
-    { 
-      path: '/landing-page', 
-      component: ExampleComponent
     }
   ]
 });

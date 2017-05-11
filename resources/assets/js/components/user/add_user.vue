@@ -21,7 +21,7 @@
               <label class="control-label" for="inputError1">ROLE</label>
               <select v-model="form.usertype" class="form-control col-md-6">
                   <option value="">Select role</option>
-                  <option value="warehouse-incharge">Warehouse Incharge</option>
+                  <option value="finance-officer">Finance Officer</option>
                   <option value="engineer">Site Engineer</option>
                   <option value="procurement-officer">Procurement Officer</option>
                   <option value="purchase-officer">Purchase Officer</option>
@@ -64,17 +64,21 @@
                      self.error[index] = '';
                 });
             },
-            submitForm(){
+            clearForm(){
                 let self = this;
                 $.each(self.form, function(index, val) {
-                    console.log(index + ': ' + val);
+                    self.form[index] = '';
                 });
+            },
+            submitForm(){
+                let self = this;
                 self.clearErrors();
                 self.$http.post('/create_user', self.form).then((resp) => {
                     if (resp.status === 200) {
                         let json = resp.body;
                         if (json.id > 0) {
                             self.$emit('newuseradded', json);
+                            self.clearForm();
                         }
                     }
                 }, (resp) => {

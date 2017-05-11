@@ -8,6 +8,7 @@
 window.Vue = require('vue');
 require('./bootstrap');
 import VueResource from 'vue-resource'
+import alertify from 'alertify.js'
 Vue.use(VueResource);
 
 
@@ -24,7 +25,14 @@ Vue.http.get('/user_details').then((resp) => {
     if (resp.status === 200) {
         let json = resp.body;
         if (json.usertype === 'engineer' && json.id > 0) {
+        	alertify.success('Welcome back Engineer ' + json.name);
             require('./routes/engineer-routes');
+        }else if(json.usertype === 'purchase-officer'){
+        	alertify.success('Welcome back Purchase Officer: ' + json.name);
+        	require('./routes/purchase-officer-routes');
+        }else if(json.usertype === 'finance-officer'){
+            alertify.success('Welcome back Finance Officer: ' + json.name);
+            require('./routes/finance-officer-routes');
         }else {
             require('./routes/admin-routes');
         }
