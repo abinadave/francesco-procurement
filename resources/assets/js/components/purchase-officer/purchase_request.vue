@@ -32,13 +32,15 @@
             :request-form="modalRequestersForm"
             :users="users"
         ></modal-create-quotation>
+        
     </div>        
 </template>
-
 <script>
+
     import PurchaseRequestListComponent from '../engineer/requisition/requistion_list.vue'
     import RequestItemsModal from '../engineer/requisition/modal_requested_items.vue'
     import CreateQuotationComponent from './quote/create_quotation.vue'
+    
     export default {
         props: {
             user: {
@@ -50,7 +52,6 @@
             this.fetchHouseModels();
             this.fetchSuppliers();
             this.fetchUsers();
-            // this.fetchQuotations();
         },
         components: {
             'request-list': PurchaseRequestListComponent,

@@ -31,6 +31,9 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::get('house_model', 'HouseModelController@fetchAll');
 	Route::put('house_model', 'HouseModelController@update');
 
+	/* for all */
+	Route::post('get_quotation_forms_by_pr_no', 'QuotationFormController@fetchFormsAndItemsByPrNo');
+
 	/* engineer basic route */
 	Route::post('requisition', 'RequestFormController@submitNewRequest');
 	Route::post('request_item', 'RequestItemController@saveItems');

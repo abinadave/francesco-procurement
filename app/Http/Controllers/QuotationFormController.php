@@ -9,6 +9,16 @@ use App\QuotationItem as QuotationItem;
 
 class QuotationFormController extends Controller
 {
+    public function fetchFormsAndItemsByPrNo(Request $request){
+        $requestForm = $request->input('request_form');
+        $prNo = $requestForm['id'];
+        $quotationForms = QuotationForm::where('request_form_id', $prNo)->get();
+        $quotationItems = QuotationItem::where('request_form_id', $prNo)->get();
+        return response()->json([
+            'quotation_forms' => $quotationForms,
+            'quotation_items' => $quotationItems
+        ]);
+    }
     public function fetchAllwithItems(){
         return response()->json([
             'quotation_items' => QuotationItem::all(),

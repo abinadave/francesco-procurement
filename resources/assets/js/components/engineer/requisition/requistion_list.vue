@@ -5,8 +5,6 @@
             <button @click="approveRequest" class="btn btn-success btn-sm">Approve <i class="glyphicon glyphicon-thumbs-up"></i></button>
             <button @click="disapproveRequest" class="btn btn-danger btn-sm">Dis-approve <i class="glyphicon glyphicon-thumbs-down"></i></button>
         </div>
-        quotation_forms: {{ quotation_forms.length }}
-        quotation_items: {{ quotation_items.length }}
         <table :class="{ 'po-officer-table' : user.usertype === 'purchase-officer' }" id="tbl-requests" class="table table-hover table-condensed table-bordered">
             <thead>
                 <tr>
@@ -35,9 +33,9 @@
                             <i class="text-primary glyphicon glyphicon-ok-sign"></i>
                         </span>
                     </td>
-                    <td class="text-center">{{ getQuotations(form) }}</td>
+                    <td class="text-center"><a style="cursor: pointer" @click="showModalQuotations(form)">{{ getQuotations(form) }}</a></td>
                     <td class="text-center" v-show="user.usertype === 'purchase-officer'">
-                        <a v-if="form.approved === 1"@click="createInvitationToQuote(form)" style="cursor: pointer">Add Quotation</a>
+                        <a v-if="form.approved === 1"@click="createInvitationToQuote(form)" style="cursor: pointer">Add Quotation</a> 0
                     </td>
                     <td style="text-align: center">{{ form.id }}</td>
                     <td v-show="user.usertype === 'purchase-officer'">
@@ -54,7 +52,9 @@
             </tbody>
         </table>
     </div>
-       
+    <modal-quotations
+     :request-form="currentForm"
+    ></modal-quotations>   
   </div>
 </template>
 <style type="text/css">
@@ -76,10 +76,15 @@
     import moment from 'moment'
     import alertify from 'alertify.js'
     import toastr from 'toastr'
+    import QuotationModalListComponent from '../../quotation/modal_show_quotations.vue'
+
     export default {
         mounted() {
             this.fetchUsers();
             this.fetchQuotations();
+        },
+        components: {
+            'modal-quotations': QuotationModalListComponent
         },
         props: {
             quotationForms: {
@@ -109,6 +114,11 @@
             }
         },
         methods: {
+            showModalQuotations(requestForm){
+                let self = this;
+                self.currentForm = requestForm;
+                $('#modal-quotations').modal('show');
+            },
             getQuotations(form){
                 let self = this;
                 let rs =self.quotation_forms.filter(function(index) {

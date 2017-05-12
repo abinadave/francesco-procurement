@@ -211,7 +211,7 @@
 	        				let json = resp.body;
 	        				if (json.id) {
                                 self.saveItems(json);
-                            }
+                            };
 	        			};
 	        		}, (resp) => {
                         if (resp.status === 422) {
@@ -220,7 +220,6 @@
                                 self.error[index] = val;
                             });
                         }
-	        			// console.log(resp);
 	        		});
         		}
         	},
