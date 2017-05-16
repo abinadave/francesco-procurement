@@ -35,7 +35,7 @@
                     </td>
                     <td class="text-center"><a style="cursor: pointer" @click="showModalQuotations(form)">{{ getQuotations(form) }}</a></td>
                     <td class="text-center" v-show="user.usertype === 'purchase-officer'">
-                        <a v-if="form.approved === 1"@click="createInvitationToQuote(form)" style="cursor: pointer">Add Quotation</a> 0
+                        <a v-if="form.approved === 1"@click="createInvitationToQuote(form)" style="cursor: pointer">Add Quotation</a>
                     </td>
                     <td style="text-align: center">{{ form.id }}</td>
                     <td v-show="user.usertype === 'purchase-officer'">
@@ -53,7 +53,7 @@
         </table>
     </div>
     <modal-quotations
-     :request-form="currentForm"
+     :request-form="showQuotationRequestForm"
     ></modal-quotations>   
   </div>
 </template>
@@ -87,6 +87,9 @@
             'modal-quotations': QuotationModalListComponent
         },
         props: {
+            newQuotationForm: {
+                type: Object
+            },
             quotationForms: {
                 type: Array
             },
@@ -110,13 +113,15 @@
             return {
                 users: [],
                 currentForm: {},
+                /* this showQuotationRequestForm is for request_form watch fetching data */
+                showQuotationRequestForm: {},
                 quotation_forms: [], quotation_items: []
             }
         },
         methods: {
             showModalQuotations(requestForm){
                 let self = this;
-                self.currentForm = requestForm;
+                self.showQuotationRequestForm = requestForm;
                 $('#modal-quotations').modal('show');
             },
             getQuotations(form){
@@ -258,6 +263,10 @@
             }
         },
         watch: {
+            'newQuotationForm': function(quotationForm){
+                let self = this;
+                self.fetchQuotations();
+            },
             'requestForms': function(newVal){
                 let self = this;
                 if (self.user.usertype === 'finance-officer') {
@@ -266,7 +275,7 @@
             },
             'currentForm': function(requestForm){
                 let self = this;
-                // alert(requestForm.approved);
+                // alert(requestForm.approved);f
             }
         }
     }

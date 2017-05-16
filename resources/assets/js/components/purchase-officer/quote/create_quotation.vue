@@ -9,6 +9,7 @@
         </div>
         <div class="modal-body">  
             <div>
+
             	<div class="form-group col-md-4">
 				  <label class="control-label">Supplier Name</label>
 				  <select class="form-control" v-model="form.supplier_id">
@@ -23,26 +24,32 @@
 				  <label class="control-label">Supplier Address</label>
 				  <input v-model="form.supplier_address" type="text" class="form-control" disabled>
 				</div>
+
 				<div :class="{ 'form-group col-md-4': true, 'has-error': error.canvass_by }">
 				  <label class="control-label">Canvass by</label>
 				  <input v-model="form.canvass_by" type="text" class="form-control">
 				</div>
+
 				<div :class="{ 'form-group col-md-4': true, 'has-error': error.canvass_date }">
 				  <label class="control-label">Canvass date</label>
 				  <input v-model="form.canvass_date" type="date" class="form-control">
 				</div>
+
 				<div class="form-group col-md-4">
 				  <label class="control-label">Purchase Request No.</label>
 				  <input v-model="requestForm.id" type="text" class="form-control" disabled>
 				</div>
+
 				<div class="form-group col-md-4">
 				  <label >Requester by</label>
 				  <input :value="getRequestersName" type="text" class="form-control" disabled>
 				</div>
+
 				<div class="form-group col-md-4">
 				  <label class="control-label">House Model</label>
 				  <input :value="getHouseModel" type="text" class="form-control" disabled>
 				</div>
+
             </div>
             <div>
                 <div class="col-md-8">
@@ -210,6 +217,7 @@
 	        			if (resp.status === 200) {
 	        				let json = resp.body;
 	        				if (json.id) {
+                                self.$emit('add-new-quotation-form', json);
                                 self.saveItems(json);
                             };
 	        			};

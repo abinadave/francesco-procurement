@@ -16,6 +16,7 @@
                                 :request-items="request_items"
                                 :request-forms="request_forms"
                                 :user="user"
+                                :new-quotation-form="newQuotationForm"
                             ></request-list>
                         </div>
                     </div>
@@ -31,6 +32,7 @@
             :suppliers="suppliers"
             :request-form="modalRequestersForm"
             :users="users"
+            @add-new-quotation-form="createNewQuotationForm"
         ></modal-create-quotation>
         
     </div>        
@@ -74,10 +76,15 @@
                     approved: 0,
                     accepted: 0
                 },
-                suppliers: [], users: []
+                suppliers: [], users: [],
+                newQuotationForm: {}
             }
         },
         methods: {
+            createNewQuotationForm(json){
+                let self = this;
+                self.newQuotationForm = json;
+            },
             changeApprovalStatus(json){
                 let self = this;
                 let rsPr = _.filter(self.request_forms, {id: Number(json.model.id)});
