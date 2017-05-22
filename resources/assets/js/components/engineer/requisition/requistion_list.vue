@@ -54,6 +54,7 @@
     </div>
     <modal-quotations
      :request-form="showQuotationRequestForm"
+     :house-models="houseModels"
     ></modal-quotations>   
   </div>
 </template>
@@ -69,7 +70,7 @@
          padding: 2px;
     }
     .po-officer-table {
-        width: 1500px;
+        width: 1700px;
     }
 </style>
 <script>
@@ -234,7 +235,11 @@
                     item = rs[i];
                     namesWithQty.push(item.description + ' (' + item.qty + '), ');
                 };
-                return namesWithQty.join(' ');
+                if (namesWithQty.length > 2) {
+                    return namesWithQty.slice(0,2).join(' ') + '....';  
+                }else {
+                    return namesWithQty.join(' ');                    
+                }
             },
             getDate(datetime){
                 return moment(datetime).format('MMMM DD, YYYY');

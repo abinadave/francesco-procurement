@@ -183,8 +183,13 @@
                         }
                     }
                 }, (resp) => {
-                    console.log(resp);
+                    console.log('refetch: /user');
+                    self.refetchUsers();
                 });
+            },
+            refetchUsers(){
+                let self = this;
+                self.fetchUsers();
             },
             formatNumber(n){
                 return accounting.formatNumber(n, 2);

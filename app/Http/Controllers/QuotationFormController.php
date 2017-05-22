@@ -9,6 +9,22 @@ use App\QuotationItem as QuotationItem;
 
 class QuotationFormController extends Controller
 {
+    public function cancelationOfQuotation(Request $request){
+        $quotationForm = $request->input('quotation_form');
+        $count = QuotationForm::where('id', $quotationForm['id'])->count();
+        $deleted = false;
+        $deleletedQI = 0;
+        if ($count) {
+            $deleted = QuotationForm::where('id', $quotationForm['id'])->delete();
+            $deleletedQI = QuotationItem::where('quotation_form_id', $quotationForm['id'])->delete();
+        }
+        return response()->json([
+            'deleted'    => $deleted,
+            'dleeted_qi' => $deleletedQI,
+            'count'      => $count
+        ]);
+    }
+
     public function fetchFormsAndItemsByPrNo(Request $request){
         $requestForm = $request->input('request_form');
         $prNo = $requestForm['id'];

@@ -11,9 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'HomeController@index')->name('home');
 
 Auth::routes();
 
@@ -47,7 +45,10 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::post('quotation_item', 'QuotationItemController@saveQuoteItems');
 	Route::get('my_quotation_forms', 'QuotationFormController@fetchMyQuotations');
 	Route::get('quotations_all', 'QuotationFormController@fetchAllwithItems');
+	Route::post('cancelation_of_quotation', 'QuotationFormController@cancelationOfQuotation');
 
-	/* finance officer */
+	/* finance officer and procurement officer */
 	Route::post('approve_pr', 'RequestFormController@approveForm');
+	Route::post('get_pr_form_by_id', 'RequestFormController@getFormById');
+	Route::post('purchase_order', 'PurchaseOrderController@createPo');
 });

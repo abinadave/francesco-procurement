@@ -7,8 +7,13 @@
           <h4 class="modal-title" id="myModalLabel">Quotations for P.R NO: <b class="text-primary">{{ requestForm.id }}</b></h4>
         </div>
         <div class="modal-body" style="overflow: auto">
-          <div>
-
+          <div v-show="whileCreatingPo">
+             <create-po @create-po-fade="hideCreatePoForm"
+                :quotation-form="currentQuotationForm"
+                :house-models="houseModels"
+             ></create-po>
+          </div>
+          <div v-show="!whileCreatingPo">
               <!-- Nav tabs -->
               <ul class="nav nav-tabs" role="tablist">
 
@@ -30,37 +35,53 @@
               <div class="tab-content">
                 
                 <div role="tabpanel" class="tab-pane active" id="pr">
-                    <purchase-request></purchase-request>
+                    <current-pr :form="requestForm" :items="requestItems"></current-pr>                
                 </div>
 
                 <div v-for="quotationForm in quotation_forms" role="tabpanel" class="tab-pane" :id="quotationForm.id">
-                     <h3>Quotation {{ quotationForm.id }}</h3>
-                     <table class="table table-bordered table-hover table-condensed" id="tbl-quotations">
-                        <thead>
-                           <tr>
-                                <th class="text-center" width="60">Qty</th>
-                                <th class="text-center" width="70" >Unit </th>
-                                <th>Description</th>
-                                <th class="text-center" width="80">Unit price</th>
-                                <th class="text-center">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="quotationItem in findQuotationItems(quotationForm)">
-                                <td class="text-center">{{ quotationItem.qty }}</td>
-                                <td class="text-center">{{ quotationItem.unit }}</td>
-                                <td>{{ quotationItem.description }}</td>
-                                <td class="text-center">{{ quotationItem.unit_price }}</td>
-                                <td class="text-right">{{ getTotal(quotationItem) }}</td>
-                            </tr>
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <th colspan="4" class="text-center" style="font-weight: bolder">TOTAL COST</th>
-                                <th class="text-right" style="font-size: 20px"><b class="text-danger">P {{ getTotalOfItemsInEachForm(quotationForm) }}</b></th>
-                            </tr>
-                        </tfoot>
-                    </table>
+                    <div class="panel panel-primary" style="padding: 20px">
+                         <button class="btn btn-primary pull-right" @click="createPo(quotationForm)">Create P.O</button>
+                         <h3>Quotation {{ quotationForm.id }}</h3><br>
+                         <label>Canvass by:
+                             <input type="text" class="form-control" :value="quotationForm.canvass_by" disabled>
+                         </label>
+                         <label>Canvass date:
+                             <input type="text" class="form-control" :value="quotationForm.canvass_by" disabled>
+                         </label>
+                         <label>Purchase Officer:
+                             <input type="text" class="form-control" :value="getPurchaseOfficerName(quotationForm)" disabled>
+                         </label>
+                         <label>Date Quotation Created:
+                             <input type="text" class="form-control" :value="formatDate(quotationForm.datetime)" disabled>
+                         </label>
+                         <hr>
+                         <table class="table table-bordered table-hover table-condensed" id="tbl-quotations">
+                            <thead>
+                               <tr>
+                                    <th class="text-center" width="60">Qty</th>
+                                    <th class="text-center" width="70" >Unit </th>
+                                    <th>Description</th>
+                                    <th class="text-center" width="80">Unit price</th>
+                                    <th class="text-center">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="quotationItem in findQuotationItems(quotationForm)">
+                                    <td class="text-center">{{ quotationItem.qty }}</td>
+                                    <td class="text-center">{{ quotationItem.unit }}</td>
+                                    <td>{{ quotationItem.description }}</td>
+                                    <td class="text-center">{{ quotationItem.unit_price }}</td>
+                                    <td class="text-right">{{ getTotal(quotationItem) }}</td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th colspan="4" class="text-center" style="font-weight: bolder">TOTAL COST</th>
+                                    <th class="text-right" style="font-size: 20px"><b class="text-danger">P {{ getTotalOfItemsInEachForm(quotationForm) }}</b></th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
               </div>
 
@@ -73,12 +94,13 @@
   </div>
 </template>
 <style type="text/css">
-  
+    
 </style>
 <script>
     import accounting from 'accounting'
     import moment from 'moment'
-    import CurrentPurchaseRequestComponent from './current_purchase_request.vue'
+    import CurrentPrComponent from './current_purchase_request.vue'
+    import CreatePoComponent from '../po/create_po.vue'
     export default {
         mounted() {
             this.fetchUsers();
@@ -88,20 +110,36 @@
             return {
                 users: [], suppliers: [],
                 quotation_forms: [],
-                quotation_items: []
+                quotation_items: [],
+                requestItems: [],
+                whileCreatingPo: false,
+                currentQuotationForm: {}
             }
         },
         components: {
-            'current-pr': CurrentPurchaseRequestComponent
-        }
+            'current-pr': CurrentPrComponent,
+            'create-po': CreatePoComponent
+        },
         props: {
             requestForm: {
                 type: Object
+            },
+            houseModels: {
+                type: Array
             }
         },
         methods: {
+            hideCreatePoForm(){
+                let self = this;
+                self.whileCreatingPo = false;
+            },
+            createPo(quotationForm){
+                let self = this;
+                self.whileCreatingPo = true;
+                self.currentQuotationForm = quotationForm;
+            },
             formatDate(date){
-                return moment(date).format('MMMM DD, YYYY, dddd');
+                return moment(date).format('MMMM DD, YYYY, hh:mm a');
             },
             getPurchaseOfficerName(quotationForm){
                 let self = this;
@@ -169,11 +207,27 @@
             },
             activeFirstQuotation(){
                
+            },
+            getRequestedItems(){
+                let self = this;
+                self.$http.post('/get_request_items_by_form', {
+                    request_form_id: self.requestForm.id
+                }).then((resp) => {
+                    if (resp.status === 200) {
+                        let json = resp.body;
+                        for (var i = json.length - 1; i >= 0; i--) {
+                            self.requestItems.push(json[i]);
+                        };
+                    }
+                }, (resp) => {
+                    console.log(resp);
+                })
             }
         },
         watch: {
             'requestForm': function(newVal){
                 let self = this;
+                self.getRequestedItems();
                 self.quotation_forms = [];
                 self.quotation_items = [];
                 self.$http.post('/get_quotation_forms_by_pr_no', {

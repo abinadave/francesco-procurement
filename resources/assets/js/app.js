@@ -33,6 +33,9 @@ Vue.http.get('/user_details').then((resp) => {
         }else if(json.usertype === 'finance-officer'){
             alertify.success('Welcome back Finance Officer: ' + json.name);
             require('./routes/finance-officer-routes');
+        }else if(json.usertype === 'procurement-officer'){
+            alertify.success('Welcome back Procurement Officer: ' + json.name);
+            require('./routes/procurement-officer-routes');
         }else {
             require('./routes/admin-routes');
         }

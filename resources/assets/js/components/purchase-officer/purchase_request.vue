@@ -157,8 +157,12 @@
                         };
                     }
                 }, (resp) => {
-
+                    console.info('re-fetch: request_forms_and_items');
+                    self.refetchAllForms();
                 });
+            },
+            refetchAllForms(){
+                this.fetchAllFormsAndItems();
             }
         },
         watch: {

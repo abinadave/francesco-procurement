@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\RequestForm as RequestForm;
+use App\RequestItem as RequestItem;
+use App\QuotationItem as QuotationItem;
 use App\ApprovedDate as ApprovedDate;
+
 class RequestFormController extends Controller
 {
     public function insertApprovalDate($form, $date){
@@ -56,5 +59,14 @@ class RequestFormController extends Controller
     	$requestForm->checked_by = $request->input('checked_by');
     	$requestForm->save();
     	return response()->json($requestForm);
+    }
+    public function getFormById(Request $request){
+        $quotationForm = $request->input('quotation_form');
+        $pr_no = $quotationForm['request_form_id'];
+        return response()->json([
+            'request_form'  => RequestForm::findOrFail($pr_no),
+            'request_items' => RequestItem::where('request_form_id', $pr_no)->get(),
+            'quotation_items' => QuotationItem::where('request_form_id', $pr_no)->get()
+        ]);
     }
 }

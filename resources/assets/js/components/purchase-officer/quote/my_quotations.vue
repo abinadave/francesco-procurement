@@ -10,10 +10,11 @@
                    <th class="text-center">Canvass date</th>
                    <th>No of Items</th>
                    <th>Items</th>
+                   <th width="100"></th>
                </tr>
            </thead>
            <tbody>
-               <tr v-for="quotationForm in quotation_forms">
+               <tr v-for="(quotationForm, index) in quotation_forms">
                    <td class="text-center">{{ quotationForm.request_form_id }}</td>
                    <td class="text-center">{{ getSupplierWhat(quotationForm.supplier_id, 'name') }}</td>
                    <td>{{ getSupplierWhat(quotationForm.supplier_id, 'address') }}</td>
@@ -21,6 +22,7 @@
                    <td class="text-center">{{ formatDate(quotationForm.canvass_date) }}</td>
                    <td>{{ getTotalNumberOfQuoteItems(quotationForm.id)}}</td>
                    <td>{{ getSampleItems(quotationForm.id) }}</td>
+                   <td><a style="cursor:pointer" @click="cancelQuotation(quotationForm, index)"><b class="text-danger">cancel</b></a></td>
                </tr>
            </tbody>
        </table>
@@ -33,9 +35,9 @@
 </style>
 <script>
     import moment from 'moment'
+    import alertify from 'alertify.js'
     export default {
         mounted() {
-            // console.log('Component mounted.')
             this.fetchMyQuotations();
         },
         props: {
@@ -50,6 +52,23 @@
             }
         },
         methods: {
+            cancelQuotation(quotationForm, index){
+                let self = this;
+                alertify.confirm('Are you sure you want to cancel this quotation ?', function(){
+                    self.$http.post('/cancelation_of_quotation', {
+                        quotation_form: quotationForm
+                    }).then((resp) => {
+                        if (resp.status === 200) {
+                            let json = resp.body;
+                            if (json.deleted) {
+                                self.quotation_forms.splice(index, 1);
+                            }
+                        }
+                    }, (resp) => {
+                        console.log(resp);
+                    });
+                });
+            },
             getSampleItems(quotationFormId){
                 let self = this;
                 let rsItems = _.filter(self.quotation_items, {quotation_form_id: Number(quotationFormId)});

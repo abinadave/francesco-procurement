@@ -1,5 +1,5 @@
 <template>
-    <div>  
+    <div class="col-md-9 panel panel-default" style="margin-top: 20px">  
           
             <p class="text-center">INTEGRATED, PEOPLE-DRIVEN COMMUNITY PROJECT IN POST YOLANDA</p>
             <p class="text-center" style="margin-top: -12px; font-size: 11px" >BRGY. 99 DIIT, TACLOBAN CITY</p>
@@ -66,6 +66,8 @@
 </template>
 
 <script>
+    import moment from 'moment'
+    import accounting from 'accounting'
     export default {
         mounted() {
             this.fetchUsers();
@@ -171,7 +173,7 @@
             'items': function(items){
                 let self = this;
                 let $tr = $('#tr-items'),
-                total = 20;
+                total = 10;
                 setTimeout(function(){
                     total -= self.items.length;
                     let html = '';
