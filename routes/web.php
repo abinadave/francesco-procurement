@@ -51,4 +51,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::post('approve_pr', 'RequestFormController@approveForm');
 	Route::post('get_pr_form_by_id', 'RequestFormController@getFormById');
 	Route::post('purchase_order', 'PurchaseOrderController@createPo');
+	Route::get('po', 'PurchaseOrderController@fetchAll');
 });

@@ -8,6 +8,14 @@ use App\PurchaseOrder as PurchaseOrder;
 use App\PoItem as PoItem;
 class PurchaseOrderController extends Controller
 {
+    public function fetchAll(){
+        $purchaseOrders = PurchaseOrder::orderBy('id','desc')->get();
+        $poItems = PoItem::all();
+        return response()->json([
+            'purchase_orders' => $purchaseOrders,
+            'po_items'        => $poItems
+        ]);
+    }
     public function createPo(Request $request){
     	$quotationForm = $request->input('quotation_form');
     	$items = $request->input('items');
