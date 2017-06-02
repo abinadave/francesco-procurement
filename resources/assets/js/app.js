@@ -11,7 +11,6 @@ import VueResource from 'vue-resource'
 import alertify from 'alertify.js'
 Vue.use(VueResource);
 
-
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
