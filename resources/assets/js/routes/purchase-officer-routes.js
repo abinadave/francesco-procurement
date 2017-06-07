@@ -1,9 +1,9 @@
 import VueRouter from 'vue-router'
-import { store } from '../store/store'  
+import Vuex from 'vuex'
 
 Vue.use(VueRouter);
 
-
+import { store } from '../store/store' 
 
 import PurchaseRequestComponent from '../components/purchase-officer/purchase_request.vue'
 import QuotationListComponent from '../components/purchase-officer/quote/quotation_list.vue'

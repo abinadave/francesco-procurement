@@ -19,7 +19,6 @@ Vue.use(VueResource);
 
 Vue.http.headers.common['X-CSRF-TOKEN'] = document.querySelector('#csrf-token').getAttribute('content');
 
-// import
 Vue.http.get('/user_details').then((resp) => {
     if (resp.status === 200) {
         let json = resp.body;

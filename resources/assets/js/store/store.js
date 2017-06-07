@@ -1,13 +1,30 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-Vue.use(Vuex);
 
 export const store = new Vuex.Store({
 	state: {
-		divisions: []
+		divisions: [],
+		purchase_orders: [],
+		po_items: []
 	},
 	mutations: {
+		FETCH_PURCHASE_ORDERS(state){
+			let self = this;
+			Vue.http.get('/po').then((resp) => {
+				if (resp.status === 200) {
+                    let json = resp.body;
+                    for (var i = json.po_items.length - 1; i >= 0; i--) {
+                        state.po_items.unshift(json.po_items[i]);
+                    };
+                    for (var i = json.purchase_orders.length - 1; i >= 0; i--) {
+                        state.purchase_orders.unshift(json.purchase_orders[i]);
+                    };
+                }
+			}, (resp) => {
+				console.log(resp);
+			});
+		},
 		FETCH_APPROVED_DATES(state){
 			let self = this;
 			state.divisions = [];
@@ -34,6 +51,12 @@ export const store = new Vuex.Store({
 	getters: {
 		divisions(state){
 			return state.divisions;
+		},
+		purchase_orders(state){
+			return state.purchase_orders;
+		},
+		po_items(state){
+			return state.po_items;
 		}
 	}
 });

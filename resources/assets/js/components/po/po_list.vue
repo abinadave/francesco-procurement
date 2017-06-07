@@ -3,7 +3,9 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="panel panel-info">
-                    <div class="panel-heading">Purchase Orders</div>
+                    <div class="panel-heading">Purchase Orders
+                    po_items: {{ po_items.length }}
+                    </div>
 
                     <div class="panel-body">
                         <table class="table table-hover table-striped">
@@ -37,15 +39,20 @@
     import moment from 'moment'
     export default {
         mounted() {
-            // console.log('Component mounted.')
-            this.fetchPos();
+            this.$store.commit('FETCH_PURCHASE_ORDERS');
             this.fetchSupplier();
         },
         data(){
             return {
-                po_items: [],
-                purchase_orders: [],
                 suppliers: []
+            }
+        },
+        computed: {
+            purchase_orders(){
+                return this.$store.getters.purchase_orders;
+            },
+            po_items(){
+                return this.$store.getters.po_items;
             }
         },
         methods: {
@@ -65,23 +72,6 @@
                     let model = _.first(rsSuppliers);
                     return model.name.toUpperCase();
                 }
-            },
-            fetchPos(){
-                let self = this;
-                self.$http.get('/po')
-                .then((resp) => {
-                    if (resp.status === 200) {
-                        let json = resp.body;
-                        for (var i = json.po_items.length - 1; i >= 0; i--) {
-                            self.po_items.unshift(json.po_items[i]);
-                        };
-                        for (var i = json.purchase_orders.length - 1; i >= 0; i--) {
-                            self.purchase_orders.unshift(json.purchase_orders[i]);
-                        };
-                    }
-                }, (resp) => {
-                    console.log(resp);
-                });
             },
             fetchSupplier(){
                 let self = this;

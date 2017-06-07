@@ -46,6 +46,9 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::get('my_quotation_forms', 'QuotationFormController@fetchMyQuotations');
 	Route::get('quotations_all', 'QuotationFormController@fetchAllwithItems');
 	Route::post('cancelation_of_quotation', 'QuotationFormController@cancelationOfQuotation');
+	Route::get('po', function(){
+		echo "Good";
+	});
 
 	/* finance officer and procurement officer */
 	Route::post('approve_pr', 'RequestFormController@approveForm');

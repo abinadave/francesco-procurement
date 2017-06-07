@@ -1,6 +1,7 @@
 import VueRouter from 'vue-router'
 Vue.use(VueRouter);
 
+import { store } from '../store/store'
 import PurchaseRequestComponent from '../components/purchase-officer/purchase_request.vue'
 import POComponent from '../components/po/po_list.vue'
 window.router = new VueRouter({
@@ -22,6 +23,7 @@ window.router = new VueRouter({
 });
 
 const app = new Vue({
-  	router
+  	router,
+    store
 }).$mount('#app');
 
