@@ -11,6 +11,7 @@
                         <table class="table table-hover table-striped">
                             <thead>
                                 <tr>
+                                    <th width="20"></th>
                                     <th>PR NO.</th>
                                     <th>SUPPLIER NAME</th>
                                     <th>QUOTATION NO.</th>
@@ -20,6 +21,7 @@
                             </thead>
                             <tbody>
                                 <tr v-for="po in purchase_orders">
+                                    <td><a style="cursor: pointer" @click="openPoReceipt(po)"><i class="glyphicon glyphicon-folder-close"></i></a></td>
                                     <td>{{ po.pr_no }}</td>
                                     <td>{{ getSupplierName(po.supplier_id) }}</td>
                                     <td>{{ po.quotation_form_id }}</td>
@@ -32,20 +34,27 @@
                 </div>
             </div>
         </div>
+        <po-receipt></po-receipt>
     </div>
 </template>
 
 <script>
     import moment from 'moment'
+    import PoModalReceipt from './po_modal_printable.vue'
     export default {
         mounted() {
             this.$store.commit('FETCH_PURCHASE_ORDERS');
+            this.$store.commit('FETCH_REQUEST_FORMS_ITEMS');
+            this.$store.commit('FETCH_SUPPLIERS');
             this.fetchSupplier();
         },
         data(){
             return {
                 suppliers: []
             }
+        },
+        components: {
+            'po-receipt': PoModalReceipt
         },
         computed: {
             purchase_orders(){
@@ -56,6 +65,14 @@
             }
         },
         methods: {
+            openPoReceipt(po){
+                let self = this;
+                $('#modal-po-receipt').modal('show');
+                self.$store.commit({
+                    type: 'CURRENT_PO',
+                    po: po
+                });
+            },
             getItems(po){
                 let self = this;
                 let rsItems = _.filter(self.po_items, {po_id: Number(po.id)});

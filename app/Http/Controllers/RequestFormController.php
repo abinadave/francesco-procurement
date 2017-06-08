@@ -69,4 +69,12 @@ class RequestFormController extends Controller
             'quotation_items' => QuotationItem::where('request_form_id', $pr_no)->get()
         ]);
     }
+    public function fetchAllRequest(){
+        $requestForms = RequestForm::orderBy('id','desc')->get();
+        $requestItems = RequestItem::orderBy('id','desc')->get();
+        return response()->json([
+            'request_forms' => $requestForms,
+            'request_items' => $requestItems
+        ]);
+    }
 }

@@ -55,4 +55,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::post('get_pr_form_by_id', 'RequestFormController@getFormById');
 	Route::post('purchase_order', 'PurchaseOrderController@createPo');
 	Route::get('po', 'PurchaseOrderController@fetchAll');
+	Route::get('request_form_items', 'RequestFormController@fetchAllRequest');
 });
