@@ -5,11 +5,10 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+          <h4 class="modal-title" id="myModalLabel">Modal title {{ suppliers.length }}</h4>
         </div>
         <div class="modal-body">
             <br>
-            <!-- <img src=""> -->
             <p class="text-center">INTEGRATED, PEOPLE-DRIVEN COMMUNITY PROJECT IN POST YOLANDA</p>
             <p class="text-center" style="margin-top: -12px; font-size: 11px" >BRGY. 99 DIIT, TACLOBAN CITY</p>
             <h5 class="text-center" style="margin-top: 5px; font-weight: bolder">PURCHASE REQUEST</h5>
@@ -79,7 +78,9 @@
 
         },
         computed: {
-            
+            suppliers(){
+                this.$store.getters.suppliers;
+            }
         }
     }
 </script>

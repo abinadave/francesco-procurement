@@ -8209,9 +8209,6 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 				if (resp.status === 200) {
 					var json = resp.body;
 					state.suppliers = json;
-					state.suppliers.forEach(function (model) {
-						console.log(model);
-					});
 				};
 			}, function (resp) {
 				console.log(resp);
@@ -8285,6 +8282,9 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 		},
 		po_items: function po_items(state) {
 			return state.po_items;
+		},
+		suppliers: function suppliers(state) {
+			return state.suppliers;
 		}
 	}
 });
@@ -43253,12 +43253,15 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     mounted: function mounted() {},
 
-    computed: {}
+    computed: {
+        suppliers: function suppliers() {
+            this.$store.getters.suppliers;
+        }
+    }
 });
 
 /***/ }),
@@ -66603,7 +66606,14 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('div', {
     staticClass: "modal-content"
-  }, [_vm._m(0), _vm._v(" "), _c('div', {
+  }, [_c('div', {
+    staticClass: "modal-header"
+  }, [_vm._m(0), _vm._v(" "), _c('h4', {
+    staticClass: "modal-title",
+    attrs: {
+      "id": "myModalLabel"
+    }
+  }, [_vm._v("Modal title " + _vm._s(_vm.suppliers.length))])]), _vm._v(" "), _c('div', {
     staticClass: "modal-body"
   }, [_c('br'), _vm._v(" "), _c('p', {
     staticClass: "text-center"
@@ -66643,9 +66653,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v("P")])])])], 1)])]), _vm._v(" "), _vm._m(5)])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "modal-header"
-  }, [_c('button', {
+  return _c('button', {
     staticClass: "close",
     attrs: {
       "type": "button",
@@ -66656,12 +66664,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "aria-hidden": "true"
     }
-  }, [_vm._v("×")])]), _vm._v(" "), _c('h4', {
-    staticClass: "modal-title",
-    attrs: {
-      "id": "myModalLabel"
-    }
-  }, [_vm._v("Modal title")])])
+  }, [_vm._v("×")])])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "pull-right",

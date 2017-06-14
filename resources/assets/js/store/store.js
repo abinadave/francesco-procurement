@@ -24,9 +24,6 @@ export const store = new Vuex.Store({
 				if (resp.status === 200) {
                     let json = resp.body;
                     state.suppliers = json;
-                    state.suppliers.forEach(function(model){
-                    	console.log(model);
-                    })
                 };
 			}, (resp) => {
 				console.log(resp);
@@ -101,6 +98,9 @@ export const store = new Vuex.Store({
 		},
 		po_items(state){
 			return state.po_items;
+		},
+		suppliers(state){
+			return state.suppliers;
 		}
 	}
 });
