@@ -4,7 +4,6 @@
             <div class="col-md-12">
                 <div class="panel panel-info">
                     <div class="panel-heading">Purchase Orders
-                    po_items: {{ po_items.length }}
                     </div>
 
                     <div class="panel-body">
@@ -62,16 +61,25 @@
             },
             po_items(){
                 return this.$store.getters.po_items;
+            },
+            request_forms(){
+                return this.$store.getters.request_forms;
+            },
+            request_items(){
+                return this.$store.getters.request_items;
             }
         },
         methods: {
             openPoReceipt(po){
                 let self = this;
                 $('#modal-po-receipt').modal('show');
-                self.$store.commit({
-                    type: 'CURRENT_PO',
-                    po: po
-                });
+                let rsPurchaseForm = _.filter(self.request_forms, { id: po.pr_no});
+                let rsPurchaseItem = _.filter(self.request_items, { request_form_id: po.pr_no });
+                
+                // self.$store.commit({
+                //     type: 'CURRENT_PO',
+                //     po: po
+                // });
             },
             getItems(po){
                 let self = this;

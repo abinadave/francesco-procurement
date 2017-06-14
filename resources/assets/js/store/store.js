@@ -46,7 +46,9 @@ export const store = new Vuex.Store({
 		CURRENT_PO(state, payload){
 			let self = this;
 			let po = payload.po;
-			alert(po.id);
+			$.each(po, function(index, val) {
+				console.log(index + ': ' + val);
+			});
 		},
 		FETCH_PURCHASE_ORDERS(state){
 			let self = this;
@@ -90,6 +92,12 @@ export const store = new Vuex.Store({
 
 	},
 	getters: {
+		request_forms(state){
+			return state.request_forms;
+		},
+		request_items(state){
+			return state.request_items;
+		},
 		divisions(state){
 			return state.divisions;
 		},

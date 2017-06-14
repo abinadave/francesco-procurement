@@ -8231,7 +8231,9 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 		CURRENT_PO: function CURRENT_PO(state, payload) {
 			var self = this;
 			var po = payload.po;
-			alert(po.id);
+			$.each(po, function (index, val) {
+				console.log(index + ': ' + val);
+			});
 		},
 		FETCH_PURCHASE_ORDERS: function FETCH_PURCHASE_ORDERS(state) {
 			var self = this;
@@ -8274,6 +8276,12 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 		}
 	},
 	getters: {
+		request_forms: function request_forms(state) {
+			return state.request_forms;
+		},
+		request_items: function request_items(state) {
+			return state.request_items;
+		},
 		divisions: function divisions(state) {
 			return state.divisions;
 		},
@@ -30884,7 +30892,7 @@ module.exports = Component.exports
 
 "use strict";
 /* WEBPACK VAR INJECTION */(function(global) {/*!
- * Vue.js v2.3.3
+ * Vue.js v2.3.4
  * (c) 2014-2017 Evan You
  * Released under the MIT License.
  */
@@ -35313,7 +35321,7 @@ Object.defineProperty(Vue$3.prototype, '$ssrContext', {
   }
 });
 
-Vue$3.version = '2.3.3';
+Vue$3.version = '2.3.4';
 
 /*  */
 
@@ -35804,6 +35812,7 @@ function createPatchFunction (backend) {
   function initComponent (vnode, insertedVnodeQueue) {
     if (isDef(vnode.data.pendingInsert)) {
       insertedVnodeQueue.push.apply(insertedVnodeQueue, vnode.data.pendingInsert);
+      vnode.data.pendingInsert = null;
     }
     vnode.elm = vnode.componentInstance.$el;
     if (isPatchable(vnode)) {
@@ -43103,7 +43112,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
 
 
 
@@ -43129,16 +43137,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         po_items: function po_items() {
             return this.$store.getters.po_items;
+        },
+        request_forms: function request_forms() {
+            return this.$store.getters.request_forms;
+        },
+        request_items: function request_items() {
+            return this.$store.getters.request_items;
         }
     },
     methods: {
         openPoReceipt: function openPoReceipt(po) {
             var self = this;
             $('#modal-po-receipt').modal('show');
-            self.$store.commit({
-                type: 'CURRENT_PO',
-                po: po
-            });
+            var rsPurchaseForm = _.filter(self.request_forms, { id: po.pr_no });
+            var rsPurchaseItem = _.filter(self.request_items, { request_form_id: po.pr_no });
+
+            // self.$store.commit({
+            //     type: 'CURRENT_PO',
+            //     po: po
+            // });
         },
         getItems: function getItems(po) {
             var self = this;
@@ -66606,14 +66623,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_c('div', {
     staticClass: "modal-content"
-  }, [_c('div', {
-    staticClass: "modal-header"
-  }, [_vm._m(0), _vm._v(" "), _c('h4', {
-    staticClass: "modal-title",
-    attrs: {
-      "id": "myModalLabel"
-    }
-  }, [_vm._v("Modal title " + _vm._s(_vm.suppliers.length))])]), _vm._v(" "), _c('div', {
+  }, [_vm._m(0), _vm._v(" "), _c('div', {
     staticClass: "modal-body"
   }, [_c('br'), _vm._v(" "), _c('p', {
     staticClass: "text-center"
@@ -66653,7 +66663,9 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }
   }, [_vm._v("P")])])])], 1)])]), _vm._v(" "), _vm._m(5)])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('button', {
+  return _c('div', {
+    staticClass: "modal-header"
+  }, [_c('button', {
     staticClass: "close",
     attrs: {
       "type": "button",
@@ -66664,7 +66676,12 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     attrs: {
       "aria-hidden": "true"
     }
-  }, [_vm._v("×")])])
+  }, [_vm._v("×")])]), _vm._v(" "), _c('h4', {
+    staticClass: "modal-title",
+    attrs: {
+      "id": "myModalLabel"
+    }
+  }, [_vm._v("Modal title ")])])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "pull-right",
@@ -67274,7 +67291,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     staticClass: "panel panel-info"
   }, [_c('div', {
     staticClass: "panel-heading"
-  }, [_vm._v("Purchase Orders\n                po_items: " + _vm._s(_vm.po_items.length) + "\n                ")]), _vm._v(" "), _c('div', {
+  }, [_vm._v("Purchase Orders\n                ")]), _vm._v(" "), _c('div', {
     staticClass: "panel-body"
   }, [_c('table', {
     staticClass: "table table-hover table-striped"
@@ -69749,7 +69766,7 @@ if (false) {
 /* unused harmony export Http */
 /* unused harmony export Resource */
 /*!
- * vue-resource v1.3.3
+ * vue-resource v1.3.4
  * https://github.com/pagekit/vue-resource
  * Released under the MIT License.
  */
@@ -70886,7 +70903,7 @@ var Client = function (context) {
     }
 
     function Client(request) {
-        return new PromiseObj(function (resolve) {
+        return new PromiseObj(function (resolve, reject) {
 
             function exec() {
 
@@ -70911,10 +70928,10 @@ var Client = function (context) {
                     resHandlers.forEach(function (handler) {
                         response = when(response, function (response) {
                             return handler.call(context, response) || response;
-                        });
+                        }, reject);
                     });
 
-                    when(response, resolve);
+                    when(response, resolve, reject);
 
                     return;
                 }
