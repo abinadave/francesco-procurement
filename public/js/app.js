@@ -8196,13 +8196,35 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 		divisions: [],
 		purchase_orders: [],
 		po_items: [],
+		house_models: [],
 
 		/* data for po receipt */
 		po_receipt_purchase_orders: [],
-		po_receipt_po_items: []
+		po_receipt_po_items: [],
 
+		/* for modal po receipt */
+		currentPo: {},
+		currentPurchaseForm: [],
+		rsPurchaseItem: []
 	},
 	mutations: {
+		FETCH_HOUSE_MODELS: function FETCH_HOUSE_MODELS(state) {
+			__WEBPACK_IMPORTED_MODULE_0_vue___default.a.http.get('/house_model').then(function (resp) {
+				if (resp.status === 200) {
+					var json = resp.body;
+					state.house_models = json;
+				};
+			}, function (resp) {
+				console.log(resp);
+			});
+		},
+		SET_CURRENT_PO: function SET_CURRENT_PO(state, payload) {
+			var self = this;
+			var po = payload.po;
+			state.currentPo = po;
+			state.currentPurchaseForm = _.filter(state.request_forms, { id: po.pr_no })[0];
+			state.rsPurchaseItem = _.filter(state.request_items, { request_form_id: po.pr_no });
+		},
 		FETCH_SUPPLIERS: function FETCH_SUPPLIERS(state) {
 			var self = this;
 			__WEBPACK_IMPORTED_MODULE_0_vue___default.a.http.get('/supplier').then(function (resp) {
@@ -8293,6 +8315,18 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 		},
 		suppliers: function suppliers(state) {
 			return state.suppliers;
+		},
+		currentPo: function currentPo(state) {
+			return state.currentPo;
+		},
+		currentPurchaseForm: function currentPurchaseForm(state) {
+			return state.currentPurchaseForm;
+		},
+		rsPurchaseItem: function rsPurchaseItem(state) {
+			return state.rsPurchaseItem;
+		},
+		house_models: function house_models(state) {
+			return state.house_models;
 		}
 	}
 });
@@ -43120,6 +43154,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         this.$store.commit('FETCH_PURCHASE_ORDERS');
         this.$store.commit('FETCH_REQUEST_FORMS_ITEMS');
         this.$store.commit('FETCH_SUPPLIERS');
+        this.$store.commit('FETCH_HOUSE_MODELS');
         this.fetchSupplier();
     },
     data: function data() {
@@ -43149,13 +43184,10 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         openPoReceipt: function openPoReceipt(po) {
             var self = this;
             $('#modal-po-receipt').modal('show');
-            var rsPurchaseForm = _.filter(self.request_forms, { id: po.pr_no });
-            var rsPurchaseItem = _.filter(self.request_items, { request_form_id: po.pr_no });
-
-            // self.$store.commit({
-            //     type: 'CURRENT_PO',
-            //     po: po
-            // });
+            self.$store.commit({
+                type: 'SET_CURRENT_PO',
+                po: po
+            });
         },
         getItems: function getItems(po) {
             var self = this;
@@ -43196,6 +43228,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment__ = __webpack_require__(0);
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_0_moment___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_0_moment__);
 //
 //
 //
@@ -43270,6 +43304,8 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+
 
 /* harmony default export */ __webpack_exports__["default"] = ({
     mounted: function mounted() {},
@@ -43277,6 +43313,30 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     computed: {
         suppliers: function suppliers() {
             this.$store.getters.suppliers;
+        },
+        currentPo: function currentPo() {
+            return this.$store.getters.currentPo;
+        },
+        currentPurchaseForm: function currentPurchaseForm() {
+            return this.$store.getters.currentPurchaseForm;
+        },
+        rsPurchaseItem: function rsPurchaseItem() {
+            return this.$store.getters.rsPurchaseItem;
+        },
+        house_models: function house_models() {
+            return this.$store.getters.house_models;
+        }
+    },
+    methods: {
+        formatDate: function formatDate(date) {
+            return __WEBPACK_IMPORTED_MODULE_0_moment___default()(date).format('MMMM DD, YYYY');
+        }
+    },
+    watch: {
+        'currentPo': function currentPo(newVal) {
+            $.each(newVal, function (index, val) {
+                console.log(index + ': ' + val);
+            });
         }
     }
 });
@@ -66639,12 +66699,31 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "margin-top": "5px",
       "font-weight": "bolder"
     }
-  }, [_vm._v("PURCHASE REQUEST")]), _vm._v(" "), _vm._m(1), _vm._v(" "), _vm._m(2), _c('br'), _vm._v(" "), _vm._m(3), _vm._v(" "), _c('div', [_c('table', {
+  }, [_vm._v("PURCHASE REQUEST")]), _vm._v(" "), _c('div', {
+    staticClass: "pull-right",
+    staticStyle: {
+      "margin-top": "-10px"
+    }
+  }, [_c('ul', [_c('li', [_c('b', [_vm._v("Date:    " + _vm._s(_vm.formatDate(_vm.currentPurchaseForm.datetime)))])]), _vm._v(" "), _c('li', [_c('b', [_vm._v("PR No. " + _vm._s(_vm.currentPurchaseForm.id))])])])]), _vm._v(" "), _vm._m(1), _c('br'), _vm._v(" "), _c('div', {
+    staticClass: "panel panel-default"
+  }, [_c('ul', [_c('li', [_vm._v("Location          \n                    "), _c('span', {
+    staticStyle: {
+      "text-decoration": "underline"
+    }
+  }, [_vm._v(_vm._s(_vm.currentPurchaseForm.location))])]), _vm._v(" "), _c('li', [_vm._v("Block No         \n                    "), _c('span', {
+    staticStyle: {
+      "text-decoration": "underline"
+    }
+  }, [_vm._v(_vm._s(_vm.currentPurchaseForm.block_no))])]), _vm._v(" "), _c('li', [_vm._v("House Model \n                    "), _c('span', {
+    staticStyle: {
+      "text-decoration": "underline"
+    }
+  }, [_vm._v(_vm._s(_vm.currentPurchaseForm.house_model))])])])]), _vm._v(" "), _c('div', [_c('table', {
     staticClass: "table table-bordered table-condensed table-hover",
     attrs: {
       "id": "tbl-requested-items"
     }
-  }, [_vm._m(4), _vm._v(" "), _c('tbody', {
+  }, [_vm._m(2), _vm._v(" "), _c('tbody', {
     attrs: {
       "id": "tr-items"
     }
@@ -66661,7 +66740,20 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "text-align": "right",
       "font-size": "16px"
     }
-  }, [_vm._v("P")])])])], 1)])]), _vm._v(" "), _vm._m(5)])])])
+  }, [_vm._v("P")])])])], 1)])]), _vm._v(" "), _c('div', {
+    staticClass: "modal-footer"
+  }, [_vm._v("\n        house_models " + _vm._s(_vm.house_models.length) + "\n        "), _c('button', {
+    staticClass: "btn btn-default",
+    attrs: {
+      "type": "button",
+      "data-dismiss": "modal"
+    }
+  }, [_vm._v("Close")]), _vm._v(" "), _c('button', {
+    staticClass: "btn btn-primary",
+    attrs: {
+      "type": "button"
+    }
+  }, [_vm._v("Save changes")])])])])])
 },staticRenderFns: [function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
     staticClass: "modal-header"
@@ -66684,21 +66776,10 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_vm._v("Modal title ")])])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('div', {
-    staticClass: "pull-right",
-    staticStyle: {
-      "margin-top": "-10px"
-    }
-  }, [_c('ul', [_c('li', [_c('b', [_vm._v("Date:   ")])]), _vm._v(" "), _c('li', [_c('b', [_vm._v("PR No.")])])])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
     staticStyle: {
       "margin-top": "-5px"
     }
   }, [_c('label', [_vm._v("Name ")])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "panel panel-default"
-  }, [_c('ul', [_c('li', [_vm._v("Location          \n                    "), _c('span', [_vm._v("________________________")])]), _vm._v(" "), _c('li', [_vm._v("Block No         \n                    "), _c('span', [_vm._v("________________________")])]), _vm._v(" "), _c('li', [_vm._v("House Model \n                    "), _c('span', [_vm._v("________________________")])])])])
 },function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
   return _c('thead', [_c('tr', [_c('th', {
     attrs: {
@@ -66723,21 +66804,6 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       "width": "120"
     }
   }, [_vm._v("TOTAL")])])])
-},function (){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;
-  return _c('div', {
-    staticClass: "modal-footer"
-  }, [_c('button', {
-    staticClass: "btn btn-default",
-    attrs: {
-      "type": "button",
-      "data-dismiss": "modal"
-    }
-  }, [_vm._v("Close")]), _vm._v(" "), _c('button', {
-    staticClass: "btn btn-primary",
-    attrs: {
-      "type": "button"
-    }
-  }, [_vm._v("Save changes")])])
 }]}
 module.exports.render._withStripped = true
 if (false) {

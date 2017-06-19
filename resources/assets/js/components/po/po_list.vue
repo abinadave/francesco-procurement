@@ -45,6 +45,7 @@
             this.$store.commit('FETCH_PURCHASE_ORDERS');
             this.$store.commit('FETCH_REQUEST_FORMS_ITEMS');
             this.$store.commit('FETCH_SUPPLIERS');
+            this.$store.commit('FETCH_HOUSE_MODELS');
             this.fetchSupplier();
         },
         data(){
@@ -73,13 +74,10 @@
             openPoReceipt(po){
                 let self = this;
                 $('#modal-po-receipt').modal('show');
-                let rsPurchaseForm = _.filter(self.request_forms, { id: po.pr_no});
-                let rsPurchaseItem = _.filter(self.request_items, { request_form_id: po.pr_no });
-                
-                // self.$store.commit({
-                //     type: 'CURRENT_PO',
-                //     po: po
-                // });
+                self.$store.commit({
+                    type: 'SET_CURRENT_PO',
+                    po: po
+                });
             },
             getItems(po){
                 let self = this;

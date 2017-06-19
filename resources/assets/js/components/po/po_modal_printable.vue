@@ -14,8 +14,8 @@
             <h5 class="text-center" style="margin-top: 5px; font-weight: bolder">PURCHASE REQUEST</h5>
             <div class="pull-right" style="margin-top: -10px">
                 <ul>
-                  <li><b>Date: &nbsp;&nbsp;</b></li>
-                  <li><b>PR No.</b></li>
+                  <li><b>Date: &nbsp;&nbsp; {{ formatDate(currentPurchaseForm.datetime) }}</b></li>
+                  <li><b>PR No. {{ currentPurchaseForm.id }}</b></li>
                 </ul>
             </div>
             <div style="margin-top: -5px">
@@ -26,15 +26,15 @@
             <div class="panel panel-default">
                 <ul>
                     <li>Location &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-                      <span>________________________</span>
+                      <span style="text-decoration: underline;">{{ currentPurchaseForm.location }}</span>
 
                     </li>
                     <li>Block No&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
-                      <span>________________________</span>
+                      <span style="text-decoration: underline;">{{ currentPurchaseForm.block_no }}</span>
 
                     </li>
                     <li>House Model&nbsp;
-                      <span>________________________</span>
+                      <span style="text-decoration: underline;">{{ currentPurchaseForm.house_model }}</span>
 
                     </li>
                 </ul>
@@ -63,6 +63,7 @@
             </div>
         </div>
         <div class="modal-footer">
+          house_models {{ house_models.length }}
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary">Save changes</button>
         </div>
@@ -73,6 +74,7 @@
 </template>
 
 <script>
+    import moment from 'moment'
     export default {
         mounted() {
 
@@ -80,6 +82,30 @@
         computed: {
             suppliers(){
                 this.$store.getters.suppliers;
+            },
+            currentPo(){
+                return this.$store.getters.currentPo;
+            },
+            currentPurchaseForm(){
+                return this.$store.getters.currentPurchaseForm;
+            },
+            rsPurchaseItem(){
+                return this.$store.getters.rsPurchaseItem;
+            },
+            house_models(){
+                return this.$store.getters.house_models;
+            }
+        },
+        methods: {
+            formatDate(date){
+                return moment(date).format('MMMM DD, YYYY');
+            }
+        },
+        watch: {
+            'currentPo': function(newVal){
+                $.each(newVal, function(index, val) {
+                    console.log(index + ': ' + val);
+                });
             }
         }
     }
