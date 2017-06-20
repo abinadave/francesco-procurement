@@ -19,7 +19,7 @@
               <input v-model="form.block_no" type="text" class="form-control">
             </div>
             <div :class="{ 'form-group col-md-4': true }">
-              <label  class="control-label">Chargin.</label>
+              <label  class="control-label">Charging type</label>
               <select v-model="form.charging" class="form-control">
                   <option value="direct-cost">Direct Cost</option>
                   <option value="indirect-cost">Indirect Cost</option>

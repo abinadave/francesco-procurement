@@ -5,7 +5,7 @@
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-          <h4 class="modal-title" id="myModalLabel">Modal title </h4>
+          <h4 class="modal-title" id="myModalLabel">Purchase Order</h4>
         </div>
         <div class="modal-body">
             <br>
@@ -19,10 +19,9 @@
                 </ul>
             </div>
             <div style="margin-top: -5px">
-                <label>Name </label>
-
+                <label>Name of Supplier: <b class="text-primary">{{ getSupplierWhat('name') }}</b> </label><br>
+                <label>Address: <b class="text-primary">{{ getSupplierWhat('address') }}</b></label>
             </div><br>
-            
             <div class="panel panel-default">
                 <ul>
                     <li>Location &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
@@ -35,7 +34,6 @@
                     </li>
                     <li>House Model&nbsp;
                       <span style="text-decoration: underline;">{{ currentPurchaseForm.house_model }}</span>
-
                     </li>
                 </ul>
             </div>
@@ -51,19 +49,25 @@
                         </tr>
                     </thead>
                     <tbody id="tr-items">
-                            
+                        <tr v-for="po_item in currentPoItems">
+                            <th>{{ po_item.qty }}</th>
+                            <th>{{ po_item.unit }}</th>
+                            <th>{{ po_item.description }}</th>
+                            <th>{{ po_item.unit_price }}</th>
+                            <th style="text-align: right">{{ getTotal(po_item) }}</th>
+                        </tr>
                     </tbody>
                     <tfoot>
                         <tr>
                            <th colspan="4" style="font-size: 16px">ESTIMATED COST</th>
-                           <th style="text-align: right; font-size: 16px" class="text-danger">P</th>
+                           <th style="text-align: right; font-size: 16px" class="text-danger">P {{ modalTotalAmount }}</th>
                         </tr>
                     </tfoot>
+
                 </table>
             </div>
         </div>
         <div class="modal-footer">
-          house_models {{ house_models.length }}
           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button type="button" class="btn btn-primary">Save changes</button>
         </div>
@@ -75,13 +79,14 @@
 
 <script>
     import moment from 'moment'
+    import accounting from 'accounting'
     export default {
         mounted() {
 
         },
         computed: {
             suppliers(){
-                this.$store.getters.suppliers;
+                return this.$store.getters.suppliers;
             },
             currentPo(){
                 return this.$store.getters.currentPo;
@@ -94,18 +99,42 @@
             },
             house_models(){
                 return this.$store.getters.house_models;
+            },
+            currentPoItems(){
+                return this.$store.getters.currentPoItems;
+            },
+            modalTotalAmount(){
+                let total = 0, po_item = {};
+                let self = this;
+                for (var i = self.currentPoItems.length - 1; i >= 0; i--) {
+                    po_item = self.currentPoItems[i];
+                    total += Number(po_item.qty) * Number(po_item.unit_price);
+                };
+                return accounting.formatNumber(total, 2);
             }
         },
         methods: {
+            getTotal(po_item){
+                let self = this;
+                let total = Number(po_item.qty) * Number(po_item.unit_price);
+                return accounting.formatNumber(total, 2);
+            },
+            getSupplierWhat(key){
+                let self = this;
+                let supplier_id = self.currentPo.supplier_id;
+                let rsSuppliers = _.filter(self.suppliers, {id: Number(supplier_id)});
+                if (rsSuppliers.length) {
+                    let supplier =  _.first(rsSuppliers);
+                    return supplier[key].toUpperCase();
+                };
+            },
             formatDate(date){
                 return moment(date).format('MMMM DD, YYYY');
             }
         },
         watch: {
             'currentPo': function(newVal){
-                $.each(newVal, function(index, val) {
-                    console.log(index + ': ' + val);
-                });
+
             }
         }
     }

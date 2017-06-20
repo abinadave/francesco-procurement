@@ -7,12 +7,13 @@ import { store } from '../store/store'
 
 import PurchaseRequestComponent from '../components/purchase-officer/purchase_request.vue'
 import QuotationListComponent from '../components/purchase-officer/quote/quotation_list.vue'
+import SupplierComponent from '../components/supplier/supplier.vue'
 
 window.router = new VueRouter({
   routes: [
     { 
       path: '/', 
-      redirect: '/purchase-request' 
+      redirect: '/purchase-request'
     },
     { 
       path: '/purchase-request', 
@@ -21,6 +22,10 @@ window.router = new VueRouter({
     {
       path: '/quotation-list',
       component: QuotationListComponent
+    },
+    {
+      path: '/supplier',
+      component: SupplierComponent
     }
   ]
 });

@@ -143,6 +143,10 @@ export const store = new Vuex.Store({
 		},
 		house_models(state){
 			return state.house_models;
+		},
+		currentPoItems(state){
+			let self = this;
+			return _.filter(state.po_items, {po_id: Number(state.currentPo.id)});
 		}
 	}
 });
