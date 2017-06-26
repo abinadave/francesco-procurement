@@ -56,4 +56,9 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::post('purchase_order', 'PurchaseOrderController@createPo');
 	Route::get('po', 'PurchaseOrderController@fetchAll');
 	Route::get('request_form_items', 'RequestFormController@fetchAllRequest');
+	Route::get('quotations', 'QuotationFormController@fetchAllwithItems');
+
+	/* everyone */
+	Route::post('opened_request', 'OpenedRequestController@validateAndInsert');
+	Route::get('opened_request', 'OpenedRequestController@fetchall');
 });

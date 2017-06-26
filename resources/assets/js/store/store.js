@@ -12,6 +12,9 @@ export const store = new Vuex.Store({
 		purchase_orders: [],
 		po_items: [],
 		house_models: [],
+		opened_requests: [],
+		quotation_forms: [],
+		quotation_items: [],
 
 		/* data for po receipt */
 		po_receipt_purchase_orders: [],
@@ -23,6 +26,43 @@ export const store = new Vuex.Store({
 		rsPurchaseItem: []
 	},
 	mutations: {
+		FETCH_QUOTATIONS_AND_ITEMS(state){
+			state.quotation_forms = [];
+			state.quotation_items = [];
+			Vue.http.get('/quotations').then((resp) => {
+				if (resp.status === 200) {
+                    let json = resp.body;
+                    state.quotation_forms = json.quotation_forms;
+                    state.quotation_items = json.quotation_items;
+                };
+			}, (resp) => {
+				console.log(resp);
+			});
+		},	
+		FETCH_REQUEST_FORMS_ITEMS(state){
+			let self = this;
+			state.request_forms = [];
+			state.request_items = [];
+			Vue.http.get('/request_form_items').then((resp) => {
+				if (resp.status === 200) {
+                    let json = resp.body;
+                    state.request_forms = json.request_forms;
+                    state.request_items = json.request_items;
+                };
+			}, (resp) => {
+				console.log(resp);
+			});
+		},
+		FETCH_OPENED_REQUESTS(state){
+			Vue.http.get('/opened_request').then((resp) => {
+				if (resp.status === 200) {
+                    let json = resp.body;
+                    state.opened_requests = json;
+                };
+			}, (resp) => {
+				console.log(resp);
+			});
+		},
 		FETCH_HOUSE_MODELS(state){
 			Vue.http.get('/house_model').then((resp) => {
 				if (resp.status === 200) {
@@ -51,20 +91,7 @@ export const store = new Vuex.Store({
 				console.log(resp);
 			});
 		},
-		FETCH_REQUEST_FORMS_ITEMS(state){
-			let self = this;
-			state.request_forms = [];
-			state.request_items = [];
-			Vue.http.get('/request_form_items').then((resp) => {
-				if (resp.status === 200) {
-                    let json = resp.body;
-                    state.request_forms = json.request_forms;
-                    state.request_items = json.request_items;
-                };
-			}, (resp) => {
-				console.log(resp);
-			});
-		},
+
 		CURRENT_PO(state, payload){
 			let self = this;
 			let po = payload.po;
@@ -108,12 +135,26 @@ export const store = new Vuex.Store({
 			});
 		},
 		PUSH_DIVISION(state, payload){
-			let self = this;
 			state.divisions.unshift(payload.division);
+		},
+		PUSH_OPENED_REQUESTS(state, payload){
+			let or = payload.opened_request;
+			$.each(or, function(index, val) {
+				console.log(index + ': ' + val);
+			});
+			state.opened_requests.push(payload.opened_request);
 		}
-
 	},
 	getters: {
+		quotation_forms(state){
+			return state.quotation_forms;
+		},
+		quotation_items(state){
+			return state.quotation_items;
+		},
+		opened_requests(state){
+			return state.opened_requests;
+		},
 		request_forms(state){
 			return state.request_forms;
 		},

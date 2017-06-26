@@ -1,13 +1,16 @@
 <template>
   <div>
-    <div>
+    <div style="overflow: auto">
         <div v-if="user.usertype === 'finance-officer'">
+
             <button @click="approveRequest" class="btn btn-success btn-sm">Approve <i class="glyphicon glyphicon-thumbs-up"></i></button>
             <button @click="disapproveRequest" class="btn btn-danger btn-sm">Dis-approve <i class="glyphicon glyphicon-thumbs-down"></i></button>
         </div>
         <table :class="{ 'po-officer-table' : user.usertype === 'purchase-officer' }" id="tbl-requests" class="table table-hover table-condensed table-bordered">
             <thead>
                 <tr>
+                    <th width="230" style="text-align: center">DATE</th>
+                    <th width="100" style="text-align: center">TIME</th>
                     <th width="30"></th>
                     <th class="text-center" width="70">APPROVED</th>
                     <th class="text-center" width="80">QUOTATIONS</th>
@@ -18,13 +21,13 @@
                     <th style="text-align: center">LOCATION</th>
                     <th width="90"style="text-align: center">BLOCK NO.</th>
                     <th width="140" style="text-align: center">CHARGING</th>
-                    <th width="130" style="text-align: center">DATE</th>
-                    <th width="100" style="text-align: center">TIME</th>
                     <th>Items</th>
                 </tr>
             </thead>
             <tbody>
-                <tr :value="form" @click="setCurrentForm(form)" v-for="form in requestForms">
+                <tr :class="{ 'font-bold': ifNotOpened(form) }" :value="form" @click="setCurrentForm(form)" v-for="form in requestForms">
+                    <td style="text-align: center">{{ getDate(form.datetime) }} - {{ getTimeFromNow(form.datetime)}}</td>
+                    <td style="text-align: center">{{ getTime(form.datetime) }}</td>
                     <td class="text-center">
                         <i @click="showItems(form)" style="cursor: pointer" class="glyphicon glyphicon-folder-open text-primary"></i>
                     </td>
@@ -45,8 +48,7 @@
                     <td style="text-align: center">{{ form.location }}</td>
                     <td style="text-align: center">{{ form.block_no }}</td>
                     <td style="text-align: center">{{ form.charging.replace('-',' ').toUpperCase() }}</td>
-                    <td style="text-align: center">{{ getDate(form.datetime) }}</td>
-                    <td style="text-align: center">{{ getTime(form.datetime) }}</td>
+                    
                     <td>{{ getSampleItems(form) }}</td>
                 </tr>
             </tbody>
@@ -59,9 +61,15 @@
   </div>
 </template>
 <style type="text/css">
+
+    .font-bold {
+        font-weight: bolder;
+        font-size: 14px;
+    }
     #tbl-requests {
         font-size: 12px;
         margin-top: 15px;
+        width: 1600px;
     }
     #tbl-requests tr {
         cursor: pointer;
@@ -83,6 +91,7 @@
         mounted() {
             this.fetchUsers();
             this.fetchQuotations();
+            this.$store.commit('FETCH_OPENED_REQUESTS');
         },
         components: {
             'modal-quotations': QuotationModalListComponent
@@ -119,7 +128,21 @@
                 quotation_forms: [], quotation_items: []
             }
         },
+        computed: {
+            opened_requests(){
+                return this.$store.getters.opened_requests;
+            }
+        },
         methods: {
+            ifNotOpened(form){
+                let self = this;
+                let rs = _.filter(self.opened_requests, { pr_no: Number(form.id)});
+                return (rs.length > 0 ) ? false : true;
+                // return true;
+            },
+            getTimeFromNow(datetime){
+                return moment(datetime).fromNow();
+            },
             showModalQuotations(requestForm){
                 let self = this;
                 self.showQuotationRequestForm = requestForm;
@@ -224,6 +247,23 @@
                 self.$emit('setmodalitems', rs);
                 self.$emit('setmodalform', form);
                 $('#modal-requested-items').modal('show');
+                self.$http.post('/opened_request', {
+                    form: form
+                }).then((resp) => {
+                    if (resp.status === 200) {
+                        let json = resp.body;
+                        if (!json.duplicate) {
+                            self.$store.commit({
+                                'type': 'PUSH_OPENED_REQUESTS',
+                                opened_request: json.or
+                            });
+                        }else {
+
+                        }
+                    }
+                }, (resp) => {
+                    console.log(resp);
+                });
             },
             getSampleItems(form){
                 let self = this;

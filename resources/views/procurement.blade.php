@@ -46,6 +46,7 @@
                         &nbsp;
                         <li><router-link to="/purchase-request">Purchase Request</router-link></li>
                         <li><router-link to="/purchase-order">Purchase Order</router-link></li>
+                        <li><router-link to="/quotation">Quotations</router-link></li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->

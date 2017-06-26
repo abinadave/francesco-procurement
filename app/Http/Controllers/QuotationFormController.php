@@ -9,6 +9,12 @@ use App\QuotationItem as QuotationItem;
 
 class QuotationFormController extends Controller
 {
+    public function fetchall(){
+        return response()->json([
+            'quotation_forms' => QuotationForm::orderBy('id','desc')->get(),
+            'quotation_items' => QuotationItem::all()
+        ]);
+    }
     public function cancelationOfQuotation(Request $request){
         $quotationForm = $request->input('quotation_form');
         $count = QuotationForm::where('id', $quotationForm['id'])->count();

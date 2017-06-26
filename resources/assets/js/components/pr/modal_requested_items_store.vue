@@ -101,16 +101,7 @@
     export default {
         mounted() {
             // console.log('Component mounted.')
-            this.fetchUsers();
-            this.fetchHouseModels();
-        },
-        props: {
-            items: {
-                type: Array
-            },
-            form: {
-                type: Object
-            }
+           
         },
         data(){
             return {
@@ -119,112 +110,13 @@
             }
         },
         computed: {
-            getHouseModel(){
-                let self = this;
-                let rs = _.filter(self.house_models, {id: Number(self.form.house_model)});
-                // return rs.length;
-                if (rs.length) {
-                    return rs[0].model.toUpperCase();
-                }else { return '-'; };
-            },
-            getTotalAllItems(){
-                let self = this;
-                let item = {}, total = 0.0;
-                for (var i = self.items.length - 1; i >= 0; i--) {
-                  item = self.items[i];
-                  total += Number(item.qty) * Number(item.unit_price);
-                }
-                return accounting.formatNumber(total, 2);
-            },
-            getDateAndTime(){
-                let self = this;
-                let formated = moment(self.form.datetime).format('MMMM DD, YYYY, ddd,  hh:mm a');
-                return formated;
-            },
-            getRequestersName(){
-                let self = this;
-                let rs = _.filter(self.users, {id: self.form.requested_by});
-                if (rs.length) {
-                    return rs[0].name.toUpperCase();
-                }else {
-                    return 'Requesters name not found';
-                }
-            }
+           
         },
         methods: {
-            getString(str){
-                let self = this;
-                if (typeof str === 'string') {
-                    return str.toUpperCase();
-                }else {
-                    return 'not found';
-                }
-            },
-            fetchHouseModels(){
-                let self = this;
-                self.$http.get('/house_model').then((resp) => {
-                    if (resp.status === 200) {
-                        let json = resp.body;
-                        for (var i = json.length - 1; i >= 0; i--) {
-                            self.house_models.push(json[i]);
-                        };
-                    }
-                }, (resp) => {
-                    console.log(resp);
-                });
-            },
-            fetchUsers(){
-                let self = this;
-                self.$http.get('/user').then((resp) => {
-                    if (resp.status === 200) {
-                        let users = resp.body;
-                        for (var i = users.length - 1; i >= 0; i--) {
-                             self.users.push(users[i]);
-                        }
-                    }
-                }, (resp) => {
-                    console.log('refetch: /user');
-                    self.refetchUsers();
-                });
-            },
-            refetchUsers(){
-                let self = this;
-                self.fetchUsers();
-            },
-            formatNumber(n){
-                return accounting.formatNumber(n, 2);
-            },
-            getTotal(item){
-                let self = this;
-                let total = Number(item.qty) * Number(item.unit_price);
-                return accounting.formatNumber(total, 2);
-            }
+           
         },
         watch: {
-            'form': function(newVal){
-                // $.each(newVal, function(index, val) {
-                //     console.log(index + ': ' + val);
-                // });
-            },
-            'items': function(items){
-                // let self = this;
-                // let $tr = $('#tr-items'),
-                // total = 20;
-                // setTimeout(function(){
-                //     total -= self.items.length;
-                //     let html = '';
-                //     for (var i = total - 1; i >= 0; i--) {
-                //         html += '<tr >';
-                //         html += '<td class="td-extension">-</td>';
-                //         html += '<td class="td-extension">-</td>';
-                //         html += '<td class="td-extension">-</td>';
-                //         html += '<td class="td-extension">-</td>';
-                //         html += '<td class="td-extension">-</td>';
-                //         html += '</tr>';
-                //     };
-                //     $tr.append(html);
-                // }, 700);
-            }
+          
         }
     }
 </script>
