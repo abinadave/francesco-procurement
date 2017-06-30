@@ -14,13 +14,13 @@
 </template>
 
 <script>
-
     import QuotationListComponent from './quotation_list.vue'
     export default {
         mounted() {
             this.$store.commit('FETCH_QUOTATIONS_AND_ITEMS');
             this.$store.commit('FETCH_REQUEST_FORMS_ITEMS');
             this.$store.commit('FETCH_SUPPLIERS');
+            this.$store.commit('FETCH_APPROVED_QUOTATIONS');
         },
         components: {
             'quotation-list': QuotationListComponent

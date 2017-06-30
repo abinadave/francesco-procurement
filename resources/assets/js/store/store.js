@@ -16,6 +16,9 @@ export const store = new Vuex.Store({
 		quotation_forms: [],
 		quotation_items: [],
 
+		/* approved dates of quotation*/
+		approved_prs: [],
+
 		/* data for po receipt */
 		po_receipt_purchase_orders: [],
 		po_receipt_po_items: [],
@@ -26,6 +29,17 @@ export const store = new Vuex.Store({
 		rsPurchaseItem: []
 	},
 	mutations: {
+		FETCH_APPROVED_QUOTATIONS(state){
+			state.approved_prs = [];
+			Vue.http.get('/approved_pr').then((resp) => {
+				if (resp.status === 200) {
+                    let json = resp.body;
+                   	state.approved_prs = json.approved_dates;
+                };
+			}, (resp) => {
+				console.log(resp);
+			});
+		},
 		FETCH_QUOTATIONS_AND_ITEMS(state){
 			state.quotation_forms = [];
 			state.quotation_items = [];

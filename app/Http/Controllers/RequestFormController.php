@@ -11,6 +11,12 @@ use App\ApprovedDate as ApprovedDate;
 
 class RequestFormController extends Controller
 {
+    public function approvedPr(){
+        return response()->json([
+            'approved_dates' => ApprovedDate::all()
+        ]);
+    }
+
     public function insertApprovalDate($form, $date){
         $approvedDate = new ApprovedDate;
         $approvedDate->date_of_approval = $date;

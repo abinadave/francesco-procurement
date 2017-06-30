@@ -2,7 +2,6 @@
   <div>
     <div style="overflow: auto">
         <div v-if="user.usertype === 'finance-officer'">
-
             <button @click="approveRequest" class="btn btn-success btn-sm">Approve <i class="glyphicon glyphicon-thumbs-up"></i></button>
             <button @click="disapproveRequest" class="btn btn-danger btn-sm">Dis-approve <i class="glyphicon glyphicon-thumbs-down"></i></button>
         </div>
@@ -14,7 +13,7 @@
                     <th width="30"></th>
                     <th class="text-center" width="70">APPROVED</th>
                     <th class="text-center" width="80">QUOTATIONS</th>
-                    <th width="100" v-show="user.usertype === 'purchase-officer'"></th>
+                    <th width="140" v-show="user.usertype === 'purchase-officer'"></th>
                     <th width="60" class="text-center">PR NO.</th>
                     <th v-show="user.usertype === 'purchase-officer'">REQUESTED BY</th>
                     <th>HOUSE MODEL</th>
@@ -29,10 +28,10 @@
                     <td style="text-align: center">{{ getDate(form.datetime) }} - {{ getTimeFromNow(form.datetime)}}</td>
                     <td style="text-align: center">{{ getTime(form.datetime) }}</td>
                     <td class="text-center">
-                        <i @click="showItems(form)" style="cursor: pointer" class="glyphicon glyphicon-folder-open text-primary"></i>
+                        <i @click="showItems(form)" style="cursor: pointer" :class="determineFolder(form)"></i>
                     </td>
                     <td class="text-center">
-                        <span v-if="form.approved === 1">
+                        <span v-if="form.approved === 1" :title="loadTitleApprovedDate(form)">
                             <i class="text-primary glyphicon glyphicon-ok-sign"></i>
                         </span>
                     </td>
@@ -61,7 +60,6 @@
   </div>
 </template>
 <style type="text/css">
-
     .font-bold {
         font-weight: bolder;
         font-size: 14px;
@@ -69,7 +67,7 @@
     #tbl-requests {
         font-size: 12px;
         margin-top: 15px;
-        width: 1600px;
+        width: 1800px;
     }
     #tbl-requests tr {
         cursor: pointer;
@@ -86,12 +84,12 @@
     import alertify from 'alertify.js'
     import toastr from 'toastr'
     import QuotationModalListComponent from '../../quotation/modal_show_quotations.vue'
-
     export default {
         mounted() {
             this.fetchUsers();
             this.fetchQuotations();
             this.$store.commit('FETCH_OPENED_REQUESTS');
+            this.$store.commit('FETCH_APPROVED_QUOTATIONS');
         },
         components: {
             'modal-quotations': QuotationModalListComponent
@@ -123,7 +121,7 @@
             return {
                 users: [],
                 currentForm: {},
-                /* this showQuotationRequestForm is for request_form watch fetching data */
+                /* This showQuotationRequestForm is for request_form watch fetching data */
                 showQuotationRequestForm: {},
                 quotation_forms: [], quotation_items: []
             }
@@ -131,14 +129,25 @@
         computed: {
             opened_requests(){
                 return this.$store.getters.opened_requests;
+            },
+            approved_prs(){
+                /* actual approved_dates table in mysql_db */
+                return this.$store.getters.approved_prs;
             }
         },
         methods: {
+            loadTitleApprovedDate(form){
+                return 'good';
+            },
+            determineFolder(form){
+                let self = this;
+                let result = self.ifNotOpened(form);
+                return (result === true) ? 'text-success glyphicon glyphicon-folder-close' : 'text-warning glyphicon glyphicon-folder-open';
+            },
             ifNotOpened(form){
                 let self = this;
                 let rs = _.filter(self.opened_requests, { pr_no: Number(form.id)});
                 return (rs.length > 0 ) ? false : true;
-                // return true;
             },
             getTimeFromNow(datetime){
                 return moment(datetime).fromNow();
@@ -310,6 +319,7 @@
         watch: {
             'newQuotationForm': function(quotationForm){
                 let self = this;
+                self.quotation_forms = [];
                 self.fetchQuotations();
             },
             'requestForms': function(newVal){

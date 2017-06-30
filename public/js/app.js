@@ -8136,6 +8136,9 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 		quotation_forms: [],
 		quotation_items: [],
 
+		/* approved dates of quotation*/
+		approved_prs: [],
+
 		/* data for po receipt */
 		po_receipt_purchase_orders: [],
 		po_receipt_po_items: [],
@@ -8146,6 +8149,17 @@ var store = new __WEBPACK_IMPORTED_MODULE_1_vuex__["a" /* default */].Store({
 		rsPurchaseItem: []
 	},
 	mutations: {
+		FETCH_APPROVED_QUOTATIONS: function FETCH_APPROVED_QUOTATIONS(state) {
+			state.approved_prs = [];
+			__WEBPACK_IMPORTED_MODULE_0_vue___default.a.http.get('/approved_pr').then(function (resp) {
+				if (resp.status === 200) {
+					var json = resp.body;
+					state.approved_prs = json.approved_dates;
+				};
+			}, function (resp) {
+				console.log(resp);
+			});
+		},
 		FETCH_QUOTATIONS_AND_ITEMS: function FETCH_QUOTATIONS_AND_ITEMS(state) {
 			state.quotation_forms = [];
 			state.quotation_items = [];
@@ -42157,6 +42171,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     },
     data: function data() {
         return {
+            whileSaving: false,
             items: [{ qty: 0, unit: '', description: '', unit_price: 0 }, { qty: 0, unit: '', description: '', unit_price: 0 }, { qty: 0, unit: '', description: '', unit_price: 0 }],
             form: {
                 location: '',
@@ -42186,11 +42201,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         },
         submitForm: function submitForm() {
             var self = this;
+            self.submitForm = true;
             self.form.datetime = __WEBPACK_IMPORTED_MODULE_0_moment___default()().format('MMMM DD, YYYY MMMM HH:mm:ss');
             var result = self.validateItems();
-            // alert(result);
             if (result === true) {
                 self.$http.post('/requisition', self.form).then(function (resp) {
+                    self.submitForm = false;
                     if (resp.status === 200) {
                         var json = resp.body;
                         if (json.id > 0) {
@@ -42199,6 +42215,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
                         }
                     }
                 }, function (resp) {
+                    self.submitForm = false;
                     console.log(resp);
                 });
             }
@@ -42217,7 +42234,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
             var self = this;
             var errors = 0;
             var validItems = self.getValidItems();
-            // alert(validItems);
             if (validItems === 0) {
                 /* no valid items */
                 __WEBPACK_IMPORTED_MODULE_2_alertify_js___default.a.alert('Please input requested item on the table.');
@@ -42344,9 +42360,6 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
-//
-//
-
 
 
 
@@ -42357,6 +42370,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         this.fetchUsers();
         this.fetchQuotations();
         this.$store.commit('FETCH_OPENED_REQUESTS');
+        this.$store.commit('FETCH_APPROVED_QUOTATIONS');
     },
 
     components: {
@@ -42389,7 +42403,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
         return {
             users: [],
             currentForm: {},
-            /* this showQuotationRequestForm is for request_form watch fetching data */
+            /* This showQuotationRequestForm is for request_form watch fetching data */
             showQuotationRequestForm: {},
             quotation_forms: [], quotation_items: []
         };
@@ -42398,14 +42412,25 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     computed: {
         opened_requests: function opened_requests() {
             return this.$store.getters.opened_requests;
+        },
+        approved_prs: function approved_prs() {
+            /* actual approved_dates table in mysql_db */
+            return this.$store.getters.approved_prs;
         }
     },
     methods: {
+        loadTitleApprovedDate: function loadTitleApprovedDate(form) {
+            return 'good';
+        },
+        determineFolder: function determineFolder(form) {
+            var self = this;
+            var result = self.ifNotOpened(form);
+            return result === true ? 'text-success glyphicon glyphicon-folder-close' : 'text-warning glyphicon glyphicon-folder-open';
+        },
         ifNotOpened: function ifNotOpened(form) {
             var self = this;
             var rs = _.filter(self.opened_requests, { pr_no: Number(form.id) });
             return rs.length > 0 ? false : true;
-            // return true;
         },
         getTimeFromNow: function getTimeFromNow(datetime) {
             return __WEBPACK_IMPORTED_MODULE_0_moment___default()(datetime).fromNow();
@@ -42576,6 +42601,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     watch: {
         'newQuotationForm': function newQuotationForm(quotationForm) {
             var self = this;
+            self.quotation_forms = [];
             self.fetchQuotations();
         },
         'requestForms': function requestForms(newVal) {
@@ -44807,12 +44833,12 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 
 
-
 /* harmony default export */ __webpack_exports__["default"] = ({
     mounted: function mounted() {
         this.$store.commit('FETCH_QUOTATIONS_AND_ITEMS');
         this.$store.commit('FETCH_REQUEST_FORMS_ITEMS');
         this.$store.commit('FETCH_SUPPLIERS');
+        this.$store.commit('FETCH_APPROVED_QUOTATIONS');
     },
 
     components: {
@@ -48132,7 +48158,7 @@ exports.push([module.i, "\ninput {\n    height: 20px;\n}\n", ""]);
 /***/ (function(module, exports, __webpack_require__) {
 
 exports = module.exports = __webpack_require__(4)();
-exports.push([module.i, "\n.font-bold {\n    font-weight: bolder;\n    font-size: 14px;\n}\n#tbl-requests {\n    font-size: 12px;\n    margin-top: 15px;\n    width: 1600px;\n}\n#tbl-requests tr {\n    cursor: pointer;\n}\n#tbl-requests td {\n     padding: 2px;\n}\n.po-officer-table {\n    width: 1700px;\n}\n", ""]);
+exports.push([module.i, "\n.font-bold {\n    font-weight: bolder;\n    font-size: 14px;\n}\n#tbl-requests {\n    font-size: 12px;\n    margin-top: 15px;\n    width: 1800px;\n}\n#tbl-requests tr {\n    cursor: pointer;\n}\n#tbl-requests td {\n     padding: 2px;\n}\n.po-officer-table {\n    width: 1700px;\n}\n", ""]);
 
 /***/ }),
 /* 201 */
@@ -68970,7 +68996,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       expression: "user.usertype === 'purchase-officer'"
     }],
     attrs: {
-      "width": "100"
+      "width": "140"
     }
   }), _vm._v(" "), _c('th', {
     staticClass: "text-center",
@@ -69026,7 +69052,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
     }, [_vm._v(_vm._s(_vm.getTime(form.datetime)))]), _vm._v(" "), _c('td', {
       staticClass: "text-center"
     }, [_c('i', {
-      staticClass: "glyphicon glyphicon-folder-open text-primary",
+      class: _vm.determineFolder(form),
       staticStyle: {
         "cursor": "pointer"
       },
@@ -69037,7 +69063,11 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
       }
     })]), _vm._v(" "), _c('td', {
       staticClass: "text-center"
-    }, [(form.approved === 1) ? _c('span', [_c('i', {
+    }, [(form.approved === 1) ? _c('span', {
+      attrs: {
+        "title": _vm.loadTitleApprovedDate(form)
+      }
+    }, [_c('i', {
       staticClass: "text-primary glyphicon glyphicon-ok-sign"
     })]) : _vm._e()]), _vm._v(" "), _c('td', {
       staticClass: "text-center"
@@ -69280,6 +69310,7 @@ module.exports={render:function (){var _vm=this;var _h=_vm.$createElement;var _c
   }, [_c('button', {
     staticClass: "btn btn-primary",
     attrs: {
+      "disable": _vm.whileSaving,
       "type": "submit"
     },
     on: {

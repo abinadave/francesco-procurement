@@ -31,7 +31,7 @@
               <input v-model="form.checked_by" type="text" class="form-control">
             </div>
             <div :class="{ 'form-group col-md-10': true }">
-                <button @click.prevent="submitForm" type="submit" class="btn btn-primary">Proceed</button>
+                <button :disable="whileSaving" @click.prevent="submitForm" type="submit" class="btn btn-primary">Proceed</button>
             </div>
         </form>
         <div class="col-md-12">
@@ -62,6 +62,7 @@
         },
         data(){
             return {
+                whileSaving: false,
                 items: [
                     { qty: 0, unit: '', description: '', unit_price: 0 },
                     { qty: 0, unit: '', description: '', unit_price: 0 },
@@ -97,12 +98,13 @@
             },
             submitForm(){
                 let self = this;
+                self.submitForm = true;
                 self.form.datetime = moment().format('MMMM DD, YYYY MMMM HH:mm:ss');
                 let result = self.validateItems();
-                // alert(result);
                 if (result === true) {
                     self.$http.post('/requisition', self.form)
                     .then((resp) => {
+                        self.submitForm = false;
                         if (resp.status === 200) {
                             let json = resp.body;
                             if (json.id > 0) {
@@ -111,6 +113,7 @@
                             }
                         }
                     }, (resp) => {
+                        self.submitForm = false;
                         console.log(resp);
                     });
                 }
@@ -131,7 +134,6 @@
                 let self = this;
                 let errors = 0;
                 let validItems = self.getValidItems();
-                // alert(validItems);
                 if (validItems === 0) {
                     /* no valid items */
                     alertify.alert('Please input requested item on the table.');

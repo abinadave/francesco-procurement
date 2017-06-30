@@ -61,4 +61,5 @@ Route::get('/home', 'HomeController@index')->name('home');
 	/* everyone */
 	Route::post('opened_request', 'OpenedRequestController@validateAndInsert');
 	Route::get('opened_request', 'OpenedRequestController@fetchall');
+	Route::get('approved_pr', 'RequestFormController@approvedPr');
 });
