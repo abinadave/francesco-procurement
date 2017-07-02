@@ -5,6 +5,12 @@
             <button @click="approveRequest" class="btn btn-success btn-sm">Approve <i class="glyphicon glyphicon-thumbs-up"></i></button>
             <button @click="disapproveRequest" class="btn btn-danger btn-sm">Dis-approve <i class="glyphicon glyphicon-thumbs-down"></i></button>
         </div>
+        House Model:<select v-model="cboHouseModel" class="form-control" style="width: 240px">
+            <option value="0">All House Model</option>
+            <option :value="hm.id" v-for="hm in houseModels">
+                {{ hm.model }}
+            </option>
+        </select>
         <table :class="{ 'po-officer-table' : user.usertype === 'purchase-officer' }" id="tbl-requests" class="table table-hover table-condensed table-bordered">
             <thead>
                 <tr>
@@ -21,6 +27,7 @@
                     <th width="90"style="text-align: center">BLOCK NO.</th>
                     <th width="140" style="text-align: center">CHARGING</th>
                     <th>Items</th>
+                    <th>ESTIMATED COST</th>
                 </tr>
             </thead>
             <tbody>
@@ -49,6 +56,9 @@
                     <td style="text-align: center">{{ form.charging.replace('-',' ').toUpperCase() }}</td>
                     
                     <td>{{ getSampleItems(form) }}</td>
+                    <td style="font-weight: bolder; font-size: 14px" class="text-primary">
+                        {{ getEstimatedCost(form) }}
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -56,6 +66,7 @@
     <modal-quotations
      :request-form="showQuotationRequestForm"
      :house-models="houseModels"
+     :user="user"
     ></modal-quotations>   
   </div>
 </template>
@@ -84,12 +95,14 @@
     import alertify from 'alertify.js'
     import toastr from 'toastr'
     import QuotationModalListComponent from '../../quotation/modal_show_quotations.vue'
+    import accounting from 'accounting' 
     export default {
         mounted() {
             this.fetchUsers();
             this.fetchQuotations();
             this.$store.commit('FETCH_OPENED_REQUESTS');
             this.$store.commit('FETCH_APPROVED_QUOTATIONS');
+            this.$store.commit('FETCH_REQUISITION_ESTIMATED_COSTS');
         },
         components: {
             'modal-quotations': QuotationModalListComponent
@@ -119,6 +132,7 @@
         },
         data(){
             return {
+                cboHouseModel: 0,
                 users: [],
                 currentForm: {},
                 /* This showQuotationRequestForm is for request_form watch fetching data */
@@ -133,9 +147,20 @@
             approved_prs(){
                 /* actual approved_dates table in mysql_db */
                 return this.$store.getters.approved_prs;
+            },
+            pr_estimated_costs(){
+                return this.$store.getters.pr_estimated_costs;
             }
         },
         methods: {
+            getEstimatedCost(pr){
+                let self = this;
+                let rs = _.filter(self.pr_estimated_costs, {request_form_id: Number(pr.id)});
+                if (rs.length) {
+                    let first = _.first(rs);
+                    return accounting.formatNumber(first.ESTIMATED_COST, 2);
+                }
+            },
             loadTitleApprovedDate(form){
                 return 'good';
             },
@@ -317,6 +342,24 @@
             }
         },
         watch: {
+            'cboHouseModel': function(newVal){
+                let self = this;
+                if (Number(newVal) > 0) {
+                    self.$http.post('/requisition_filter_by_house_model', {
+                        house_model: newVal
+                    }).then((resp) => {
+                        if (resp.status === 200) {
+                            let json = resp.body;
+                            console.log(json)
+                            self.$emit('refresh-request-forms-items', json);
+                        }
+                    }, (resp) => {
+                        console.log(resp);
+                    })
+                }else {
+                    self.$emit('fetch-all-forms-items');
+                }
+            },
             'newQuotationForm': function(quotationForm){
                 let self = this;
                 self.quotation_forms = [];

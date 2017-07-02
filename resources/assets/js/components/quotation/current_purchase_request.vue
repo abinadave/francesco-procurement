@@ -1,6 +1,6 @@
 <template>
     <div class="col-md-9 panel panel-default" style="margin-top: 20px">  
-          
+            items/requestItems: {{ items.length }}
             <p class="text-center">INTEGRATED, PEOPLE-DRIVEN COMMUNITY PROJECT IN POST YOLANDA</p>
             <p class="text-center" style="margin-top: -12px; font-size: 11px" >BRGY. 99 DIIT, TACLOBAN CITY</p>
             <h5 class="text-center" style="margin-top: 5px; font-weight: bolder">PURCHASE REQUEST</h5>
@@ -166,28 +166,26 @@
         },
         watch: {
             'form': function(newVal){
-                // $.each(newVal, function(index, val) {
-                //     console.log(index + ': ' + val);
-                // });
+                // this.items =
             },
             'items': function(items){
                 let self = this;
                 let $tr = $('#tr-items'),
                 total = 10;
-                setTimeout(function(){
-                    total -= self.items.length;
-                    let html = '';
-                    for (var i = total - 1; i >= 0; i--) {
-                        html += '<tr >';
-                        html += '<td class="td-extension">-</td>';
-                        html += '<td class="td-extension">-</td>';
-                        html += '<td class="td-extension">-</td>';
-                        html += '<td class="td-extension">-</td>';
-                        html += '<td class="td-extension">-</td>';
-                        html += '</tr>';
-                    };
-                    $tr.append(html);
-                }, 700);
+                // setTimeout(function(){
+                //     total -= self.items.length;
+                //     let html = '';
+                //     for (var i = total - 1; i >= 0; i--) {
+                //         html += '<tr >';
+                //         html += '<td class="td-extension">-</td>';
+                //         html += '<td class="td-extension">-</td>';
+                //         html += '<td class="td-extension">-</td>';
+                //         html += '<td class="td-extension">-</td>';
+                //         html += '<td class="td-extension">-</td>';
+                //         html += '</tr>';
+                //     };
+                //     $tr.append(html);
+                // }, 700);
             }
         }
     }

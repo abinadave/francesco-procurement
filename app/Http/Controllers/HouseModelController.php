@@ -4,9 +4,21 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\RequestForm as RequestForm;
+use App\RequestItem as RequestItem;
 use App\HouseModel as HouseModel;
 class HouseModelController extends Controller
 {
+    public function filterPrByHouseModel(Request $request){
+        $house_model = $request->input('house_model');
+        $request_forms = RequestForm::where('house_model', $house_model)->get();
+        $pluckedIds = $request_forms->pluck('id');
+        $request_items = RequestItem::whereIn('request_form_id', $pluckedIds)->get();
+        return response()->json([
+            'request_forms' => $request_forms,
+            'request_items' => $request_items
+        ]);
+    }
     public function update(Request $request){
         $id = $request->input('id');
         $house = HouseModel::findOrFail($id);

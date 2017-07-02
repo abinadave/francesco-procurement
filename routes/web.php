@@ -31,6 +31,8 @@ Route::get('/home', 'HomeController@index')->name('home');
 
 	/* for all */
 	Route::post('get_quotation_forms_by_pr_no', 'QuotationFormController@fetchFormsAndItemsByPrNo');
+	Route::get('pr_estimated_costs', 'RequestFormController@fetchEstimatedCosts'); 
+	Route::post('requisition_filter_by_house_model', 'HouseModelController@filterPrByHouseModel');
 
 	/* engineer basic route */
 	Route::post('requisition', 'RequestFormController@submitNewRequest');

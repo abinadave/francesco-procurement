@@ -19,7 +19,7 @@
 
                 <li role="presentation" class="active">
                       <a href="#pr" aria-controls="pr" role="tab" data-toggle="tab">
-                          purchase Reques here
+                          Purchase Reques here
                       </a>
                 </li>
 
@@ -40,8 +40,12 @@
 
                 <div v-for="quotationForm in quotation_forms" role="tabpanel" class="tab-pane" :id="quotationForm.id">
                     <div class="panel panel-primary" style="padding: 20px">
-                         <button class="btn btn-primary pull-right" @click="createPo(quotationForm)">Create P.O</button>
-                         <h3>Quotation {{ quotationForm.id }}</h3><br>
+                         <div v-show="user.usertype === 'purchase-officer'">
+                             <button class="btn btn-primary pull-right" @click="createPo(quotationForm)">
+                                 Create P.O
+                             </button>
+                         </div>
+                         <h3>Quotation</h3><br>
                          <label>Canvass by:
                              <input type="text" class="form-control" :value="quotationForm.canvass_by" disabled>
                          </label>
@@ -126,6 +130,9 @@
             },
             houseModels: {
                 type: Array
+            },
+            user: {
+                type: Object
             }
         },
         methods: {
@@ -210,6 +217,7 @@
             },
             getRequestedItems(){
                 let self = this;
+                self.requestItems = [];
                 self.$http.post('/get_request_items_by_form', {
                     request_form_id: self.requestForm.id
                 }).then((resp) => {

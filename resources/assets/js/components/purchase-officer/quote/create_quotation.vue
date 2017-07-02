@@ -91,7 +91,7 @@
             </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          <button @click="resetForm" type="button" class="btn btn-default" data-dismiss="modal">Close</button>
           <button @click="saveThisQuotation" type="button" class="btn btn-primary">Save Quotation</button>
         </div>
       </div>
@@ -171,6 +171,10 @@
             }
         },
         methods: {
+            resetForm(){
+                let self = this;
+                self.$emit('reset-quotation');
+            },
             removeItem(index){
                 this.items.splice(index, 1);
             },

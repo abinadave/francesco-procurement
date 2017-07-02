@@ -86,6 +86,7 @@
     import accounting from 'accounting'
     import additionalInfoComponent from '../pr/additional_info_pr.vue'
     import alertify from 'alertify.js'
+    import moment from 'moment'
     export default {
         mounted() {
             // console.log('Component mounted.')
@@ -129,7 +130,8 @@
                 self.whileSaving = true;
                 self.$http.post('/purchase_order', {
                     quotation_form: self.quotationForm,
-                    items: self.quotation_items
+                    items: self.quotation_items,
+                    approval_date: moment().format('MMMM DD, YYYY HH:mm:ss')
                 }).then((resp) => {
                     $("#modal-quotations").modal('hide');
                     alertify.alert('[<b class="text-primary">Purchase Order</b>] successfully created');

@@ -8,9 +8,14 @@ use App\RequestForm as RequestForm;
 use App\RequestItem as RequestItem;
 use App\QuotationItem as QuotationItem;
 use App\ApprovedDate as ApprovedDate;
-
+use DB;
 class RequestFormController extends Controller
 {
+    public function fetchEstimatedCosts(){
+        $totals = DB::select("SELECT request_form_id, SUM(qty * unit_price) AS ESTIMATED_COST FROM request_items GROUP BY request_form_id");
+        return response()->json($totals);
+    }
+
     public function approvedPr(){
         return response()->json([
             'approved_dates' => ApprovedDate::all()
@@ -72,7 +77,8 @@ class RequestFormController extends Controller
         return response()->json([
             'request_form'  => RequestForm::findOrFail($pr_no),
             'request_items' => RequestItem::where('request_form_id', $pr_no)->get(),
-            'quotation_items' => QuotationItem::where('request_form_id', $pr_no)->get()
+            'quotation_items' => QuotationItem::where('request_form_id', $pr_no)
+                                              ->where('quotation_form_id', $quotationForm['id'])->get()
         ]);
     }
     public function fetchAllRequest(){

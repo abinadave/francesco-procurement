@@ -15,9 +15,10 @@ export const store = new Vuex.Store({
 		opened_requests: [],
 		quotation_forms: [],
 		quotation_items: [],
-
+		pr_estimated_costs: [],
 		/* approved dates of quotation*/
 		approved_prs: [],
+		users: [],
 
 		/* data for po receipt */
 		po_receipt_purchase_orders: [],
@@ -29,6 +30,28 @@ export const store = new Vuex.Store({
 		rsPurchaseItem: []
 	},
 	mutations: {
+		FETCH_USERS(state){
+			state.users = [];
+			Vue.http.get('/user').then((resp) => {
+				if (resp.status === 200) {
+                    let json = resp.body;
+                    state.users = json;
+                };
+			}, (resp) => {
+				console.log(resp);
+			});
+		},
+		FETCH_REQUISITION_ESTIMATED_COSTS(state){
+			state.pr_estimated_costs = [];
+			Vue.http.get('/pr_estimated_costs').then((resp) => {
+				if (resp.status === 200) {
+                    let json = resp.body;
+                    state.pr_estimated_costs = json;
+                };
+			}, (resp) => {
+				console.log(resp);
+			});
+		},
 		FETCH_APPROVED_QUOTATIONS(state){
 			state.approved_prs = [];
 			Vue.http.get('/approved_pr').then((resp) => {
@@ -160,6 +183,12 @@ export const store = new Vuex.Store({
 		}
 	},
 	getters: {
+		users(state){
+			return state.users;
+		},
+		pr_estimated_costs(state){
+			return state.pr_estimated_costs;
+		},
 		quotation_forms(state){
 			return state.quotation_forms;
 		},

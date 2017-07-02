@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\PurchaseOrder as PurchaseOrder;
 use App\PoItem as PoItem;
+use App\QuotationForm as QuotationForm;
+
 class PurchaseOrderController extends Controller
 {
     public function fetchAll(){
@@ -18,6 +20,7 @@ class PurchaseOrderController extends Controller
     }
     public function createPo(Request $request){
     	$quotationForm = $request->input('quotation_form');
+        $approvalDate = $request->input('approval_date');
     	$items = $request->input('items');
     	$po = new PurchaseOrder;
     	$po->supplier_id = $quotationForm['supplier_id'];
@@ -27,11 +30,19 @@ class PurchaseOrderController extends Controller
     	$po->datetime = $quotationForm['datetime'];
     	$po->save();
     	if ($po->id > 0) {
+            $this->approveQuotation($quotationForm, $approvalDate);
     		$this->savePoItems($po, $items, $quotationForm);
     	}
     	return response()->json($po);
     }
-
+    private function approveQuotation($quotationForm, $approvalDate){
+        QuotationForm::where('id', $quotationForm['id'])
+                     ->update([
+                        'approved' => 1, 
+                        'approval_date' => $approvalDate,
+                        'approved_by' => Auth::user()->id
+                    ]);
+    }
     private function savePoItems($po, $items, $quotationForm){
     	foreach ($items as $item) {
     		$po_item = new PoItem;

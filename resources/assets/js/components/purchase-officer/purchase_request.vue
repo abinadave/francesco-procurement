@@ -12,6 +12,8 @@
                                 @setmodalitems="setModalRequestedItems"
                                 @setmodalform="setModalRequesterForm"
                                 @set-quotation-form="setQuotationForm"
+                                @refresh-request-forms-items="refreshRequestFormsAndItems"
+                                @fetch-all-forms-items="fetchAllFormsAndItems"
                                 :house-models="house_models"
                                 :request-items="request_items"
                                 :request-forms="request_forms"
@@ -32,6 +34,8 @@
             :suppliers="suppliers"
             :request-form="modalRequestersForm"
             :users="users"
+            
+            @reset-quotation="resetQuotationForm"
             @add-new-quotation-form="createNewQuotationForm"
         ></modal-create-quotation>
         
@@ -81,6 +85,15 @@
             }
         },
         methods: {
+            refreshRequestFormsAndItems(json){
+                let self = this;
+                self.request_forms = json.request_forms;
+                self.request_items = json.request_items;
+            },
+            resetQuotationForm(){
+                let self = this;
+                self.modalRequestersForm = {};
+            },
             createNewQuotationForm(json){
                 let self = this;
                 self.newQuotationForm = json;
@@ -146,6 +159,8 @@
             },
             fetchAllFormsAndItems(){
                 let self = this;
+                self.request_forms = [];
+                self.request_items = [];
                 self.$http.get('/request_forms_and_items').then((resp) => {
                     if (resp.status === 200) {
                         let json = resp.body;
