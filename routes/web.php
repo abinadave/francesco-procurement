@@ -10,6 +10,7 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+// Route::get('carbon_test', 'HomeController@testCarbon');
 
 Route::get('/', 'HomeController@index')->name('home');
 
@@ -33,6 +34,7 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::post('get_quotation_forms_by_pr_no', 'QuotationFormController@fetchFormsAndItemsByPrNo');
 	Route::get('pr_estimated_costs', 'RequestFormController@fetchEstimatedCosts'); 
 	Route::post('requisition_filter_by_house_model', 'HouseModelController@filterPrByHouseModel');
+	Route::get('my_notification', 'NotificationController@fetchmynotifs');
 
 	/* engineer basic route */
 	Route::post('requisition', 'RequestFormController@submitNewRequest');

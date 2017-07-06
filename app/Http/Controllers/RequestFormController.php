@@ -9,6 +9,7 @@ use App\RequestItem as RequestItem;
 use App\QuotationItem as QuotationItem;
 use App\ApprovedDate as ApprovedDate;
 use DB;
+use App\Events\PrCreated;
 class RequestFormController extends Controller
 {
     public function fetchEstimatedCosts(){
@@ -69,6 +70,7 @@ class RequestFormController extends Controller
     	$requestForm->datetime = $request->input('datetime');
     	$requestForm->checked_by = $request->input('checked_by');
     	$requestForm->save();
+        event(new PrCreated($requestForm));
     	return response()->json($requestForm);
     }
     public function getFormById(Request $request){

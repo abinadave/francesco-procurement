@@ -44,7 +44,8 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="nav navbar-nav">
                         &nbsp;
-                        <li><router-link to="/purchase-request">Purchase Request</router-link></li>
+                        <li><router-link to="/purchase-request"><i class="glyphicon glyphicon-envelope"></i>&nbsp;&nbsp;Purchase Request</router-link></li>
+                        <li><router-link to="/notification"><i class="glyphicon glyphicon-bell"></i>&nbsp;&nbsp;Notifications</router-link></li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->

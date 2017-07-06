@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+ // use App\Events\EventTesting;
+// use Carbon\Carbon;
 class HomeController extends Controller
 {
+    // public function testCarbon(){
+    //     $carbon = Carbon::now();
+    //     echo $carbon;
+    // }
     /**
      * Create a new controller instance.
      *
@@ -35,7 +40,9 @@ class HomeController extends Controller
         }elseif(Auth::user()->usertype === 'procurement-officer'){
             return view('procurement');
         }else {
-            return view('/');  
+            return view('/');
         }
     }
+
+    
 }

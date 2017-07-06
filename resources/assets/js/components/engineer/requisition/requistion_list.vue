@@ -21,11 +21,11 @@
                     <th class="text-center" width="80">QUOTATIONS</th>
                     <th width="140" v-show="user.usertype === 'purchase-officer'"></th>
                     <th width="60" class="text-center">PR NO.</th>
-                    <th v-show="user.usertype === 'purchase-officer'">REQUESTED BY</th>
+                    <th>REQUESTED BY</th>
                     <th>HOUSE MODEL</th>
                     <th style="text-align: center">LOCATION</th>
                     <th width="90"style="text-align: center">BLOCK NO.</th>
-                    <th width="140" style="text-align: center">CHARGING</th>
+                    <th style="text-align: center">CHARGING</th>
                     <th>Items</th>
                     <th>ESTIMATED COST</th>
                 </tr>
@@ -44,10 +44,15 @@
                     </td>
                     <td class="text-center"><a style="cursor: pointer" @click="showModalQuotations(form)">{{ getQuotations(form) }}</a></td>
                     <td class="text-center" v-show="user.usertype === 'purchase-officer'">
+                        <span v-if="hasApprovedQuotations(form) === true">
                         <a v-if="form.approved === 1"@click="createInvitationToQuote(form)" style="cursor: pointer">Add Quotation</a>
+                        </span>
+                        <span v-else>
+                            Quote Approved
+                        </span>
                     </td>
                     <td style="text-align: center">{{ form.id }}</td>
-                    <td v-show="user.usertype === 'purchase-officer'">
+                    <td>
                         {{ getRequestersName(form) }}
                     </td>
                     <td>{{ getHouseModel(form.house_model) }}</td>
@@ -67,6 +72,7 @@
      :request-form="showQuotationRequestForm"
      :house-models="houseModels"
      :user="user"
+     @reset-request-forms-quotations-modal="resetRequestForm"
     ></modal-quotations>   
   </div>
 </template>
@@ -153,6 +159,21 @@
             }
         },
         methods: {
+            hasApprovedQuotations(rf){
+                let self = this;
+                let rs = _.filter(self.quotation_forms, {
+                    request_form_id: Number(rf.id),
+                    approved: 1
+                });
+                if (rs.length) {
+                    return false
+                }else {
+                    return true;                    
+                }
+            },
+            resetRequestForm(){
+                this.showQuotationRequestForm = { id: 0 };
+            },
             getEstimatedCost(pr){
                 let self = this;
                 let rs = _.filter(self.pr_estimated_costs, {request_form_id: Number(pr.id)});

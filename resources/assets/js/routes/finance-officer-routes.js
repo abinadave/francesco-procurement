@@ -4,6 +4,7 @@ Vue.use(VueRouter);
 
 import { store } from '../store/store' 
 import PurchaseRequestComponent from '../components/purchase-officer/purchase_request.vue'
+import NotificationComponent from '../components/notification/notification.vue'
 window.router = new VueRouter({
   routes: [
     { 
@@ -13,6 +14,10 @@ window.router = new VueRouter({
     { 
       path: '/purchase-request', 
       component: PurchaseRequestComponent
+    },
+    {
+      path: '/notification',
+      component: NotificationComponent
     }
   ]
 });

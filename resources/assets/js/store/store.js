@@ -19,7 +19,7 @@ export const store = new Vuex.Store({
 		/* approved dates of quotation*/
 		approved_prs: [],
 		users: [],
-
+		notifications: [],
 		/* data for po receipt */
 		po_receipt_purchase_orders: [],
 		po_receipt_po_items: [],
@@ -30,6 +30,18 @@ export const store = new Vuex.Store({
 		rsPurchaseItem: []
 	},
 	mutations: {
+		FETCH_MY_NOTIFICATIONS(state){
+			state.notifications = [];
+			Vue.http.get('/my_notification').then((resp) => {
+				if (resp.status === 200) {
+                    let json = resp.body;
+                    state.notifications = json;
+                    console.log(json)
+                };
+			}, (resp) => {
+				console.log(resp);
+			});
+		},
 		FETCH_USERS(state){
 			state.users = [];
 			Vue.http.get('/user').then((resp) => {
@@ -183,6 +195,9 @@ export const store = new Vuex.Store({
 		}
 	},
 	getters: {
+		notifications(state){
+			return state.notifications;
+		},
 		users(state){
 			return state.users;
 		},

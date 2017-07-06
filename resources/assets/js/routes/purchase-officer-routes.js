@@ -15,7 +15,7 @@ window.router = new VueRouter({
       path: '/', 
       redirect: '/purchase-request'
     },
-    { 
+    {
       path: '/purchase-request', 
       component: PurchaseRequestComponent
     },

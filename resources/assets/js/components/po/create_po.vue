@@ -128,16 +128,21 @@
             proceedToPo(){
                 let self = this;
                 self.whileSaving = true;
+                let approval_date = moment().format('MMMM DD, YYYY HH:mm:ss');
                 self.$http.post('/purchase_order', {
                     quotation_form: self.quotationForm,
                     items: self.quotation_items,
-                    approval_date: moment().format('MMMM DD, YYYY HH:mm:ss')
+                    approval_date: approval_date
                 }).then((resp) => {
                     $("#modal-quotations").modal('hide');
                     alertify.alert('[<b class="text-primary">Purchase Order</b>] successfully created');
                     setTimeout(function(){
+                        self.$store.commit('FETCH_QUOTATIONS_AND_ITEMS');
                         self.whileSaving = false;
                     }, 2000);
+                    self.quotationForm.approval_date = approval_date;
+                    self.quotationForm.approved = 1;
+                    self.$emit('create-po-fade');
                 }, (resp) => {
                     console.log(resp);
                     setTimeout(function(){

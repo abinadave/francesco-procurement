@@ -54,6 +54,7 @@
             }
         },
         mounted() {
+            this.$store.commit('FETCH_QUOTATIONS_AND_ITEMS');
             this.fetchAllFormsAndItems();
             this.fetchHouseModels();
             this.fetchSuppliers();
@@ -83,6 +84,9 @@
                 suppliers: [], users: [],
                 newQuotationForm: {}
             }
+        },
+        computed: {
+            
         },
         methods: {
             refreshRequestFormsAndItems(json){

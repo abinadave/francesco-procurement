@@ -25,7 +25,18 @@
 
                 <li :id="'quotation-'+ quotationForm.id" role="presentation" v-for="quotationForm in quotation_forms">
                       <a :href="'#'+ quotationForm.id" :aria-controls="quotationForm.id" role="tab" data-toggle="tab">
-                          {{ getSupplierWhat(quotationForm, 'name') }}
+                      <div v-if="quotationForm.approved === 1">
+                            <span class="glyphicon glyphicon-ok"></span> &nbsp;
+                            <b style="font-size: 15px">
+
+                                {{ getSupplierWhat(quotationForm, 'name') }}
+
+                            </b>
+                      </div>
+                      <div v-else>
+                            {{ getSupplierWhat(quotationForm, 'name') }}
+                      </div>
+                          
                       </a>
                 </li>
                 
@@ -40,10 +51,17 @@
 
                 <div v-for="quotationForm in quotation_forms" role="tabpanel" class="tab-pane" :id="quotationForm.id">
                     <div class="panel panel-primary" style="padding: 20px">
-                         <div v-show="user.usertype === 'purchase-officer'">
-                             <button class="btn btn-primary pull-right" @click="createPo(quotationForm)">
-                                 Create P.O
-                             </button>
+                         <div v-show="user.usertype === 'procurement-officer' && quotationForm.approved !== 1">
+                             <div v-if="hasApprovedQuotations(quotationForm) === true">
+                                 <button class="btn btn-primary pull-right" @click="createPo(quotationForm)">
+                                     Create P.O
+                                 </button>
+                             </div>
+                         </div>
+                         <div v-show="quotationForm.approved === 1" class="pull-right">
+                             <i>Approved</i> | <b class="text-info">{{ getDateTimeFromNow(quotationForm.approval_date) }}</b>
+                                             | <b class="text-primary">{{ formatDate(quotationForm.approval_date) }}</b>&nbsp;&nbsp;&nbsp;
+                             <span class="text-info glyphicon glyphicon-check " style="font-size: 19px"></span>
                          </div>
                          <h3>Quotation</h3><br>
                          <label>Canvass by:
@@ -107,8 +125,14 @@
     import CreatePoComponent from '../po/create_po.vue'
     export default {
         mounted() {
-            this.fetchUsers();
-            this.fetchSuppliers();
+            let self = this;
+            self.fetchUsers();
+            self.fetchSuppliers();
+            jQuery(document).ready(function($) {
+                $('#modal-quotations').on('hidden.bs.modal', function (e) {
+                    self.$emit('reset-request-forms-quotations-modal');
+                });
+            });
         },
         data(){
             return {
@@ -135,7 +159,30 @@
                 type: Object
             }
         },
+        computed: {
+            store_quotation_forms(){
+                return this.$store.getters.quotation_forms;
+            },
+            store_quotation_items(){
+                return this.$store.getters.quotation_items;
+            }
+        },
         methods: {
+            getDateTimeFromNow(datetime){
+                return moment(datetime).fromNow();
+            },
+            hasApprovedQuotations(qf){
+                let self = this;
+                let rs = _.filter(self.store_quotation_forms, {
+                    request_form_id: Number(qf.request_form_id),
+                    approved: 1
+                });
+                if (rs.length) {
+                    return false
+                }else {
+                    return true;                    
+                }
+            },
             hideCreatePoForm(){
                 let self = this;
                 self.whileCreatingPo = false;
