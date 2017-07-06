@@ -10,6 +10,8 @@ use App\QuotationItem as QuotationItem;
 use App\ApprovedDate as ApprovedDate;
 use DB;
 use App\Events\PrCreated;
+use App\Events\SomethingHappenCreateNotification;
+use Carbon\Carbon;
 class RequestFormController extends Controller
 {
     public function fetchEstimatedCosts(){
@@ -37,6 +39,7 @@ class RequestFormController extends Controller
         $model = RequestForm::findOrFail($form['id']);
         $model->approved = $type;
         $rsUpdated = $model->save();
+        $this->createNotification($form['id']);
         if ($type) {
             $this->insertApprovalDate($form, $date);
         }
@@ -45,6 +48,15 @@ class RequestFormController extends Controller
             'model' => $model,
             'type' => $type
         ]);
+    }
+    protected function createNotification($formId){
+        $requestItemCount = RequestItem::where('request_form_id', $formId)->count();
+        event(new SomethingHappenCreateNotification(
+            'purchase-officer',
+            Carbon::now(),
+            "1 Purchase Request with $requestItemCount item/s was approved by: " . Auth::user()->name,
+            Auth::user()->id
+        ));
     }
     public function fetchMyRequisitions(){
         $id = Auth::user()->id;

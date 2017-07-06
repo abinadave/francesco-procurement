@@ -20,6 +20,8 @@ export const store = new Vuex.Store({
 		approved_prs: [],
 		users: [],
 		notifications: [],
+		read_notifications: [],
+
 		/* data for po receipt */
 		po_receipt_purchase_orders: [],
 		po_receipt_po_items: [],
@@ -30,6 +32,17 @@ export const store = new Vuex.Store({
 		rsPurchaseItem: []
 	},
 	mutations: {
+		FETCH_READ_NOTIF(state){
+			state.read_notifications = [];
+			Vue.http.get('/read_notification').then((resp) => {
+				if (resp.status === 200) {
+                    let json = resp.body;
+                    state.read_notifications = json;
+                };
+			}, (resp) => {
+				console.log(resp);
+			});
+		},
 		FETCH_MY_NOTIFICATIONS(state){
 			state.notifications = [];
 			Vue.http.get('/my_notification').then((resp) => {
@@ -192,9 +205,18 @@ export const store = new Vuex.Store({
 				console.log(index + ': ' + val);
 			});
 			state.opened_requests.push(payload.opened_request);
+		},
+		PUSH_READ_NOTIFS(state, payload){
+			let arr = payload.json;
+			for (var i = arr.length - 1; i >= 0; i--) {
+				state.read_notifications.push(arr[i]);
+			};
 		}
 	},
 	getters: {
+		read_notifications(state){
+			return state.read_notifications;
+		},
 		notifications(state){
 			return state.notifications;
 		},

@@ -19,6 +19,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\PrCreated' => [
             'App\Listeners\sendPrNotification',
         ],
+        'App\Events\SomethingHappenCreateNotification' => [
+            'App\Listeners\notifyUser',
+        ],
     ];
 
     /**

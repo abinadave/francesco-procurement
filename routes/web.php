@@ -35,6 +35,8 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::get('pr_estimated_costs', 'RequestFormController@fetchEstimatedCosts'); 
 	Route::post('requisition_filter_by_house_model', 'HouseModelController@filterPrByHouseModel');
 	Route::get('my_notification', 'NotificationController@fetchmynotifs');
+	Route::post('read_notification', 'ReadNotificationController@markasreadselectednotif');
+	Route::get('read_notification', 'ReadNotificationController@fetchmyreadednotif');
 
 	/* engineer basic route */
 	Route::post('requisition', 'RequestFormController@submitNewRequest');

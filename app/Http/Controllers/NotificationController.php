@@ -10,7 +10,7 @@ class NotificationController extends Controller
 {
     public function fetchmynotifs(){
     	$usertype = Auth::user()->usertype;
-    	$notifications = Notification::where('for_position', $usertype)->get();
+    	$notifications = Notification::where('for_position', $usertype)->orderBy('id','desc')->get();
     	return response()->json($notifications);
     }
 }

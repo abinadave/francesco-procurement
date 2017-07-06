@@ -28,7 +28,6 @@ class sendPrNotification
     public function handle(PrCreated $event)
     {
         $user = User::findOrFail($event->request_form->requested_by);
-
         $notif = new Notification;
         $notif->for_position = 'finance-officer';
         $notif->datetime = $event->request_form->datetime;
