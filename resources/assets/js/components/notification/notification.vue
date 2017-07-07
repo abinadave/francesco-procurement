@@ -25,7 +25,7 @@
                      
                   </a>
                 </div>
-                read_notifications: {{ read_notifications.length }}
+                <!-- read_notifications: {{ read_notifications.length }} -->
             </div>
         </div>
     </div>

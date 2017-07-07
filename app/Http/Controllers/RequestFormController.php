@@ -54,13 +54,13 @@ class RequestFormController extends Controller
         event(new SomethingHappenCreateNotification(
             'purchase-officer',
             Carbon::now(),
-            "Purchase Request PR No: $formId with $requestItemCount items was approved by " . Auth::user()->usertype. ", " . Auth::user()->name,
+            "Purchase Request PR No: $formId with $requestItemCount items, was approved by " . Auth::user()->usertype. ", " . Auth::user()->name,
             Auth::user()->id
         ));
         event(new SomethingHappenCreateNotification(
             'engineer',
             Carbon::now(),
-            "1 Purchase Request with PR No: $formId with $requestItemCount items was approved by " . Auth::user()->usertype. ", " . Auth::user()->name,
+            "1 Purchase Request with PR No: $formId with $requestItemCount items, was approved by " . Auth::user()->usertype. ", " . Auth::user()->name,
             Auth::user()->id
         ));
     }
