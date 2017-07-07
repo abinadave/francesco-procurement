@@ -7,6 +7,7 @@ import { store } from '../store/store'
 
 import ExampleComponent from '../components/example.vue'
 import RequisitionComponent from '../components/engineer/requisition/requisition.vue'
+import NotificationComponent from '../components/notification/notification.vue'
 
 window.router = new VueRouter({
   routes: [
@@ -17,6 +18,10 @@ window.router = new VueRouter({
     { 
       path: '/requisition', 
       component: RequisitionComponent
+    },
+    {
+      path: '/notification',
+      component: NotificationComponent
     }
   ]
 });

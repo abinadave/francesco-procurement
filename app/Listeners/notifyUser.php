@@ -31,7 +31,7 @@ class notifyUser
         $notif->for_position = $event->for_position;
         $notif->datetime = $event->datetime;
         $notif->notification_body = $event->notification_body;
-        $notif->from_user_id = $event->requested_by;
+        $notif->from_user_id = $event->from_user_id;
         $notif->save();
     }
 }

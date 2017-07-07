@@ -45,6 +45,7 @@
                     <ul class="nav navbar-nav">
                         &nbsp;
                         <li><router-link to="/requisition">Requisition</router-link></li>
+                        <li><router-link to="/notification"><i class="glyphicon glyphicon-bell"></i>&nbsp;&nbsp;Notifications</router-link></li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->

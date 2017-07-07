@@ -11,7 +11,9 @@
 |
 */
 // Route::get('carbon_test', 'HomeController@testCarbon');
-
+Route::get('test_timezone', function(){
+	var_dump('the current time is' . Date("Y m d H:i:s") );
+});
 Route::get('/', 'HomeController@index')->name('home');
 
 Auth::routes();
