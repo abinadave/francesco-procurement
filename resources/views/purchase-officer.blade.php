@@ -48,7 +48,9 @@
                         <li><router-link to="/purchase-request">PURCHASE REQUEST</router-link></li>
                         <li><router-link to="/quotation-list">P.R QUOTATIONS</router-link></li>
                         <li><router-link to="/supplier"><i class="glyphicon glyphicon-road"></i>&nbsp;&nbsp;SUPPLIERS</router-link></li>
-                        <li><router-link to="/notification"><i class="glyphicon glyphicon-bell"></i>&nbsp;&nbsp;Notifications</router-link></li>
+                        <li><router-link to="/notification"><i class="glyphicon glyphicon-bell"></i>&nbsp;&nbsp;Notifications
+                        <span class="badge active">@{{ $store.state.notifications.length }}</span>
+                        </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->

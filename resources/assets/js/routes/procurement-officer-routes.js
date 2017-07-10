@@ -5,6 +5,8 @@ import { store } from '../store/store'
 import PurchaseRequestComponent from '../components/purchase-officer/purchase_request.vue'
 import POComponent from '../components/po/po_list.vue'
 import QuotationComponent from '../components/quotation/quotation.vue'
+import NotificationComponent from '../components/notification/notification.vue'
+
 window.router = new VueRouter({
   routes: [
     { 
@@ -23,6 +25,10 @@ window.router = new VueRouter({
     {
       path: '/quotation',
       component: QuotationComponent
+    },
+    {
+      path: '/notification',
+      component: NotificationComponent
     }
   ]
 });

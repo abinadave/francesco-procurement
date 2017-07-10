@@ -6,7 +6,15 @@
                     <div class="panel-heading">Purchase Orders
                    
                     </div>
-
+                    <div>
+                        <!-- Filters here -->
+                        <select v-model="cboSupplier" class="form-control" style="width: 23%; margin: 10px; font-weight: bolder">
+                            <option :value="0">All Supplier</option>
+                            <option :value="supplier.id" v-for="supplier in suppliers"> 
+                                {{ supplier.name }}, {{ supplier.address }}
+                            </option>
+                        </select>
+                    </div>
                     <div class="panel-body" style="font-size: 12px">
                         <table class="table table-hover table-striped">
                             <thead>
@@ -15,10 +23,11 @@
                                     <th class="text-center" width="">P.R DETAILS</th>
                                     <th>PR NO.</th>
                                     <th>SUPPLIER NAME</th>
+                                    <th class="text-center">REQUESTED BY (P.R)</th>
                                     <th style="text-align: center">QUOTATION NO.</th>
                                     <th>DATE & TIME</th>
                                     <th>ITEMS</th>
-                                    <th>TOTAL</th>
+                                    <th class="text-right">TOTAL</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -35,14 +44,24 @@
                                     </td>
                                     <td>{{ po.pr_no }}</td>
                                     <td>{{ getSupplierName(po.supplier_id) }}</td>
+                                    <td class="text-center">{{ getRequestersName(po) }}</td>
                                     <td style="text-align: center">{{ po.quotation_form_id }}</td>
                                     <td>{{ formatDate(po.datetime) }}</td>
                                     <td>{{ getItems(po) }}</td>
-                                    <th class="text-primary" style="font-weight: bolder; font-size: 14px">
+                                    <th class="text-right text-primary" style="font-weight: bolder; font-size: 14px">
                                         {{ getTotalAmount(po) }}
                                     </th>
                                 </tr>
+                                <tr v-show="purchase_orders.length === 0 && cboSupplier !== 0">
+                                    <td class="text-center" colspan="9" style="font-weight: bolder; font-size: 15px">{{ purchase_orders.length }} data was found from the Server!</td>
+                                </tr>
                             </tbody>
+                            <tfoot>
+                                <tr style="font-size: 17px">
+                                    <th class="text-center" colspan="8">OVERALL TOTAL OF PURCHASE ORDERS</th>
+                                    <th class="text-right">{{ overall_total_po }}</th>
+                                </tr>
+                            </tfoot>
                         </table>
                     </div>
                 </div>
@@ -64,13 +83,15 @@
             this.$store.commit('FETCH_REQUEST_FORMS_ITEMS');
             this.$store.commit('FETCH_SUPPLIERS');
             this.$store.commit('FETCH_HOUSE_MODELS');
+            this.$store.commit('FETCH_USERS');
             this.fetchSupplier();
         },
         data(){
             return {
                 suppliers: [],
                 prItems: [],
-                prForm: {}
+                prForm: {},
+                cboSupplier: 0
             }
         },
         components: {
@@ -78,7 +99,10 @@
             'modal-pr-items': ModalPrItems
         },
         computed: {
-            
+            overall_total_po(){
+                let total = this.$store.getters.overall_total_po;
+                return accounting.formatNumber(total, 2);
+            },
             purchase_orders(){
                 return this.$store.getters.purchase_orders;
             },
@@ -90,9 +114,24 @@
             },
             request_items(){
                 return this.$store.getters.request_items;
+            },
+            users(){
+                return this.$store.getters.users;
             }
         },
         methods: {
+            getRequestersName(po){
+                let self = this;
+                let rsRequestForms = _.filter(self.request_forms, { id: Number(po.pr_no)});
+                if (rsRequestForms.length) {
+                    let request_form = _.first(rsRequestForms);
+                    let rsUsers = _.filter(self.users, { id: Number(request_form.requested_by)});
+                    if (rsUsers.length) {
+                        let user = _.first(rsUsers);
+                        return user.name.toUpperCase();
+                    }
+                };
+            },
             openPr(po){
                 let self = this;
                 $('#modal-requested-items').modal('show');
@@ -154,6 +193,24 @@
                 }, (resp) => {
                     console.log(resp);
                 });
+            }
+        },
+        watch: {
+            'cboSupplier': function(supplierId){
+                let self = this;
+                self.$http.post('/po_list_filter', {
+                    supplier_id: supplierId
+                }).then((resp) => {
+                    if (resp.status === 200) {
+                        let json = resp.body;
+                        self.$store.commit({
+                            type: 'UPDATE_PO_FORMS_ITEMS',
+                            json
+                        });
+                    }
+                }, (resp) => {
+                    console.log(resp);
+                })
             }
         }
     }

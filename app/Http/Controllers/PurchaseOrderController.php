@@ -2,14 +2,31 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Events\SomethingHappenCreateNotification;
 use App\PurchaseOrder as PurchaseOrder;
 use App\PoItem as PoItem;
 use App\QuotationForm as QuotationForm;
+use App\Supplier as Supplier;
 
 class PurchaseOrderController extends Controller
 {
+    public function filterlistby(Request $request){
+        $supplier_id = $request->input('supplier_id');
+        if ($supplier_id > 0) {
+            $purchase_orders = PurchaseOrder::where('supplier_id', $supplier_id)->orderBy('id','desc')->get();
+            $po_items = PoItem::whereIn('po_id', $purchase_orders->pluck('id'))->get();
+        }else {
+            $purchase_orders = PurchaseOrder::orderBy('id','desc')->get();
+            $po_items = PoItem::all();
+        }
+        return response()->json([
+            'purchase_orders' => $purchase_orders,
+            'po_items' => $po_items
+        ]);
+    }
     public function fetchAll(){
         $purchaseOrders = PurchaseOrder::orderBy('id','desc')->get();
         $poItems = PoItem::all();
@@ -42,6 +59,13 @@ class PurchaseOrderController extends Controller
                         'approval_date' => $approvalDate,
                         'approved_by' => Auth::user()->id
                     ]);
+        $supplier = Supplier::where('id', $quotationForm['supplier_id'])->first();
+        event(new SomethingHappenCreateNotification(
+            'purchase-officer',
+            Carbon::now(),
+            "Quotation was Approved by: " . strtoupper( Auth::user()->name ) . " with Supplier: ".strtoupper($supplier->name). " and with PrNo." . $quotationForm['request_form_id'],
+            Auth::user()->id
+        ));              
     }
     private function savePoItems($po, $items, $quotationForm){
     	foreach ($items as $item) {

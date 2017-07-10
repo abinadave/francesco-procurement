@@ -29,8 +29,10 @@ export const store = new Vuex.Store({
 		/* for modal po receipt */
 		currentPo: {},
 		currentPurchaseForm: [],
-		rsPurchaseItem: []
+		rsPurchaseItem: [],
+		cboQfApproved: 'all'
 	},
+	
 	mutations: {
 		FETCH_READ_NOTIF(state){
 			state.read_notifications = [];
@@ -211,9 +213,43 @@ export const store = new Vuex.Store({
 			for (var i = arr.length - 1; i >= 0; i--) {
 				state.read_notifications.push(arr[i]);
 			};
+		},
+		UPDATE_PO_FORMS_ITEMS(state, payload){
+			let json = payload.json;
+			state.purchase_orders = json.purchase_orders;
+			state.po_items = json.po_items;
+		},
+
+		/* FIlters */
+		FILTER_APPROVED_QUOTATIONS(state, payload){
+			let selected = payload.selected;
+			Vue.http.post('/quotation_approved_or_not', {
+				selected: selected
+			}).then((resp) => {
+				if (resp.status === 200) {
+					let json = resp.body;
+					state.quotation_forms = json.quotation_forms;
+					console.log(json.quotation_forms)
+				}
+			}, (resp) => {
+				if (resp.status === 422) {
+					let json = resp.body;
+					console.log(json);
+				}
+			});
 		}
 	},
 	getters: {
+		
+		overall_total_po(state){
+			let total = 0, item = {};
+			for (var i = state.po_items.length - 1; i >= 0; i--) {
+				item = state.po_items[i];
+				
+				total += Number(item.qty) * Number(item.unit_price);
+			};
+			return total;
+		},
 		read_notifications(state){
 			return state.read_notifications;
 		},
@@ -271,3 +307,4 @@ export const store = new Vuex.Store({
 		}
 	}
 });
+

@@ -1,14 +1,34 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\QuotationForm as QuotationForm;
 use App\QuotationItem as QuotationItem;
+use App\Supplier as Supplier;
+use App\Events\SomethingHappenCreateNotification;
 
 class QuotationFormController extends Controller
 {
+    public function filterbyapprovedornot(Request $request){
+        $selected = $request->input('selected');
+        $qfs = array();
+        $qfitems = array();
+        if ($selected == 'approved' || $selected == 'not-approved') {
+            $selected = ($selected == 'approved') ? 1 : 0;
+            $qfs = QuotationForm::where('approved', $selected)->orderBy('approval_date','desc')->get();
+            $qfitems = QuotationItem::whereIn('quotation_form_id', $qfs->pluck('id'))->get();
+        }elseif($selected == 'all') {
+            $qfs = QuotationForm::orderBy('id','desc')->get();
+            $qfitems = QuotationItem::all();
+        }
+        return response()->json([
+            'quotation_forms' => $qfs,
+            'quotation_items' => $qfitems,
+            'selected' => $selected
+        ]);
+    }
     public function fetchall(){
         return response()->json([
             'quotation_forms' => QuotationForm::orderBy('id','desc')->get(),
@@ -74,6 +94,17 @@ class QuotationFormController extends Controller
         $quotationForm->datetime = $request->input('datetime');
         $quotationForm->purchase_officer_id = Auth::user()->id;
         $quotationForm->save();
+        $this->notifyOthers($request, $quotationForm);
         return response()->json($quotationForm);
+    }
+    protected function notifyOthers($request, $quotationForm){
+        $supplier = Supplier::where('id', $quotationForm->supplier_id)->first();
+        $prNo = $request->input('request_form_id');
+        event(new SomethingHappenCreateNotification(
+            'procurement-officer',
+            Carbon::now(),
+            'Quotation ['. $supplier->name .'] was created by ' . strtoupper(Auth::user()->usertype) . ' ' . strtoupper(Auth::user()->name) . ' with PR No. ' . $prNo . ', waiting for approval',
+            Auth::user()->id
+        ));
     }
 }

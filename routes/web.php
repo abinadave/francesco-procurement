@@ -62,9 +62,15 @@ Route::get('/home', 'HomeController@index')->name('home');
 	Route::get('po', 'PurchaseOrderController@fetchAll');
 	Route::get('request_form_items', 'RequestFormController@fetchAllRequest');
 	Route::get('quotations', 'QuotationFormController@fetchAllwithItems');
-
+	Route::post('po_list_filter', 'PurchaseOrderController@filterlistby');
+	Route::post('quotation_approved_or_not', 'QuotationFormController@filterbyapprovedornot');
 	/* everyone */
 	Route::post('opened_request', 'OpenedRequestController@validateAndInsert');
 	Route::get('opened_request', 'OpenedRequestController@fetchall');
 	Route::get('approved_pr', 'RequestFormController@approvedPr');
+});
+
+Route::get('find_supplier/{id}', function($id){
+	$supplier = \App\Supplier::where('id', $id)->first();
+	print_r($supplier->name);
 });

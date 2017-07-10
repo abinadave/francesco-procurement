@@ -9,11 +9,11 @@
                     [ {{checkedNotifications.length}} ]
                   </span>
                 </a>
-                <div class="list-group">
+                <div class="list-group" style="font-size: 12.5px">
                   <a class="list-group-item disabled">
                     Your Notification will appear below <span class="badge" style="float: left; margin-right: 10px">{{ notifications.length }}</span>
                   </a>
-                  <a v-for="notif in notifications" href="#" class="list-group-item">
+                  <a v-for="notif in notifications" class="list-group-item" style="cursor: pointer">
                       <span :class="{ 'readed-notif' : ifThisIsReaded(notif) }">{{ notif.notification_body }}</span><br>
                       <b :class="{ 'readed-notif' : ifThisIsReaded(notif) === true, 'text-info': true }">{{ formatDate(notif.datetime) }}</b>
                       <span v-if="ifThisIsReaded(notif) === false">
@@ -62,7 +62,7 @@
                 }).then((resp) => {
                     if (resp.status === 200) {
                         let json = resp.body;
-                        self.checkedNotifications=[];
+                        self.checkedNotifications = [];
                         self.$store.commit({
                             type: 'PUSH_READ_NOTIFS',
                             json
